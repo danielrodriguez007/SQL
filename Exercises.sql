@@ -40,6 +40,9 @@ INSERT INTO producto VALUES(11, 'Impresora HP Laserjet Pro M26nw', 180, 3);
 
 -- EXERCICES FROM https://josejuansanchez.org/bd/ejercicios-consultas-sql/index.html
 
+
+-- 1.1.3 CONSULTA SOBRE UNA TABLA
+
 SELECT nombre from producto; -- 1.Lista el nombre de todos los productos que hay en la tabla producto.
 
 SELECT nombre, precio from producto; -- 2.Lista los nombres y los precios de todos los productos de la tabla producto.
@@ -146,3 +149,73 @@ WHERE nombre LIKE('%Monitor%') AND precio <215;-- 35.Devuelve una lista con el n
 SELECT nombre, CONCAT('€', precio) AS precio FROM producto
 WHERE precio >=180
 ORDER BY precio DESC , nombre ASC;-- 36.Lista el nombre y el precio de todos los productos que tengan un precio mayor o igual a 180€. Ordene el resultado en primer lugar por el precio (en orden descendente) y en segundo lugar por el nombre (en orden ascendente).
+
+-- 1.1.4 CONSULTAS MULTITABLA (COMPOSICION INTERNA)
+
+SELECT * FROM fabricante
+ORDER BY precio;
+
+SELECT producto.nombre, producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo; -- 1.Devuelve una lista con el nombre del producto, precio y nombre de fabricante de todos los productos de la base de datos.
+
+SELECT producto.nombre, producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+ORDER BY fabricante.nombre ASC;-- 2.Devuelve una lista con el nombre del producto, precio y nombre de fabricante de todos los productos de la base de datos. Ordene el resultado por el nombre del fabricante, por orden alfabético.
+
+SELECT producto.codigo, producto.nombre, fabricante.codigo, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo;-- 3.Devuelve una lista con el identificador del producto, nombre del producto, identificador del fabricante y nombre del fabricante, de todos los productos de la base de datos.
+
+SELECT producto.nombre, producto.precio , fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+ORDER BY producto.precio
+LIMIT 1;-- 4.Devuelve el nombre del producto, su precio y el nombre de su fabricante, del producto más barato.
+
+SELECT producto.nombre,  producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+ORDER BY producto.precio DESC
+LIMIT 1;-- 5.Devuelve el nombre del producto, su precio y el nombre de su fabricante, del producto más caro.
+
+SELECT producto.nombre, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE fabricante.nombre = 'Lenovo';-- 6.Devuelve una lista de todos los productos del fabricante Lenovo.
+
+SELECT producto.nombre, producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE fabricante.nombre = 'Crucial' AND producto.precio > 200;-- 7.Devuelve una lista de todos los productos del fabricante Crucial que tengan un precio mayor que 200€.
+
+SELECT producto.nombre, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE fabricante.nombre = 'Asus' OR fabricante.nombre = 'Hewlett-Packard' OR  fabricante.nombre = 'Seagate';-- 8.Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packard y Seagate. Sin utilizar el operador IN.
+
+SELECT producto.nombre, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE fabricante.nombre IN ('Asus', 'Hewlett-Packard','Seagate');-- 9.Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packardy Seagate. Utilizando el operador IN.
+
+SELECT producto.nombre, producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE fabricante.nombre LIKE('%e');-- 10.Devuelve un listado con el nombre y el precio de todos los productos de los fabricantes cuyo nombre termine por la vocal e.
+
+SELECT producto.nombre, producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE fabricante.nombre LIKE('%w%');-- 11.Devuelve un listado con el nombre y el precio de todos los productos cuyo nombre de fabricante contenga el carácter w en su nombre.
+
+SELECT producto.nombre, producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+WHERE producto.precio >= 180
+ORDER BY producto.precio DESC, producto.nombre ASC;-- 12.Devuelve un listado con el nombre de producto, precio y nombre de fabricante, de todos los productos que tengan un precio mayor o igual a 180€. Ordene el resultado en primer lugar por el precio (en orden descendente) y en segundo lugar por el nombre (en orden ascendente)
+
+SELECT DISTINCT fabricante.codigo, fabricante.nombre FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante;-- 13.Devuelve un listado con el identificador y el nombre de fabricante, solamente de aquellos fabricantes que tienen productos asociados en la base de datos.
