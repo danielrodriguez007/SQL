@@ -219,3 +219,40 @@ ORDER BY producto.precio DESC, producto.nombre ASC;-- 12.Devuelve un listado con
 SELECT DISTINCT fabricante.codigo, fabricante.nombre FROM fabricante
 LEFT JOIN producto
 ON fabricante.codigo = producto.codigoFabricante;-- 13.Devuelve un listado con el identificador y el nombre de fabricante, solamente de aquellos fabricantes que tienen productos asociados en la base de datos.
+
+
+-- 1.1.5 Consultas multitabla (Composición externa)
+
+SELECT fabricante.nombre as nombreFabricante, producto.nombre as nombreProducto FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+ORDER BY fabricante.nombre;-- 1.Devuelve un listado de todos los fabricantes que existen en la base de datos, junto con los productos que tiene cada uno de ellos. El listado deberá mostrar también aquellos fabricantes que no tienen productos asociado
+
+
+SELECT DISTINCT fabricante.nombre as nombreFabricante, producto.nombre FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+ORDER BY producto.nombre ASC
+LIMIT 2;-- 2.Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
