@@ -236,16 +236,52 @@ ORDER BY producto.nombre ASC
 LIMIT 2;-- 2.Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
 
 
+-- 1.1.6 Consultas resumen 
+
+SELECT COUNT(codigo) AS CantidadProductos FROM producto;-- 1.Calcula el número total de productos que hay en la tabla productos.
+
+SELECT COUNT(codigo) AS CantidadFabricantes FROM fabricante;-- 2.Calcula el número total de fabricantes que hay en la tabla fabricante.
+
+SELECT COUNT(DISTINCT(codigoFabricante)) as N°Fabricantes FROM producto;-- 3.Calcula el número de valores distintos de identificador de fabricante aparecen en la tabla productos.
+
+SELECT AVG(precio) AS MediaPrecio FROM producto; -- 4.Calcula la media del precio de todos los productos.
+
+SELECT MIN(precio) AS precioMin FROM producto;-- 5.Calcula el precio más barato de todos los productos.
+
+SELECT MAX(precio) AS precioMax FROM producto;-- 6.Calcula el precio más caro de todos los productos.
+
+SELECT nombre, precio FROM producto
+ORDER BY precio ASC
+LIMIT 1;-- 7.Lista el nombre y el precio del producto más barato.
+
+SELECT nombre, precio FROM producto
+ORDER BY precio DESC
+LIMIT 1;-- 8.Lista el nombre y el precio del producto más caro.
+
+SELECT SUM(precio) AS sumaPrecios FROM producto;-- 9.Calcula la suma de los precios de todos los productos.
+
+SELECT COUNT(codigoFabricante) AS cantProductos FROM producto
+WHERE codigoFabricante = 1; -- 10.Calcula el número de productos que tiene el fabricante Asus.
+
+SELECT AVG(precio) AS AvgPrecio FROM producto
+WHERE codigoFabricante = 1; -- 11.Calcula la media del precio de todos los productos del fabricante Asus.
+
+SELECT MIN(precio) AS precioMinAsus FROM producto
+WHERE codigoFabricante = 1; -- 12.Calcula el precio más barato de todos los productos del fabricante Asus.
+
+SELECT MAX(precio) AS precioMaxAsus FROM producto
+WHERE codigoFabricante = 1;-- 13.Calcula el precio más caro de todos los productos del fabricante Asus.
+
+SELECT SUM(precio) AS sumPrecioAsus FROM producto
+WHERE codigoFabricante = 1; -- 14.Calcula la suma de todos los productos del fabricante Asus.
+
+
+SELECT MAX(precio) AS precioMax, MIN(precio) AS precioMin, AVG(precio) AS Avgprecio, COUNT(codigoFabricante) AS cantProductos FROM producto
+WHERE codigoFabricante = 6;-- 15.Muestra el precio máximo, precio mínimo, precio medio y el número total de productos que tiene el fabricante Crucial
 
 
 
-
-
-
-
-
-
-
+SELECT * FROM producto;
 
 
 
