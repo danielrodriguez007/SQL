@@ -275,13 +275,83 @@ WHERE codigoFabricante = 1;-- 13.Calcula el precio más caro de todos los produc
 SELECT SUM(precio) AS sumPrecioAsus FROM producto
 WHERE codigoFabricante = 1; -- 14.Calcula la suma de todos los productos del fabricante Asus.
 
-
 SELECT MAX(precio) AS precioMax, MIN(precio) AS precioMin, AVG(precio) AS Avgprecio, COUNT(codigoFabricante) AS cantProductos FROM producto
 WHERE codigoFabricante = 6;-- 15.Muestra el precio máximo, precio mínimo, precio medio y el número total de productos que tiene el fabricante Crucial
 
+SELECT  DISTINCT fabricante.nombre, COUNT(producto.codigoFabricante) AS cantProducto FROM fabricante
+LEFT JOIN producto
+ON producto.codigoFabricante = fabricante.codigo
+GROUP BY fabricante.nombre
+ORDER BY fabricante.nombre;-- 16.Muestra el número total de productos que tiene cada uno de los fabricantes. El listado también debe incluir los fabricantes que no tienen ningún producto. El resultado mostrará dos columnas, una con el nombre del fabricante y otra con el número de productos que tiene. Ordene el resultado descendentemente por el número de productos.
 
 
-SELECT * FROM producto;
+SELECT DISTINCT fabricante.nombre , MAX(producto.precio) AS precioMax
+, MIN(producto.precio) AS precioMin, AVG(producto.precio) AS promPrecio
+FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre;-- 17.Muestra el precio máximo, precio mínimo y precio medio de los productos de cada uno de los fabricantes. El resultado mostrará el nombre del fabricante junto con los datos que se solicitan.
+
+
+SELECT DISTINCT fabricante.nombre, MAX(producto.precio) AS precioMax,
+MIN(producto.precio) AS precioMin, AVG(producto.precio) AS promPrecio,
+COUNT(producto.codigoFabricante) AS cantProductos FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre
+HAVING promPrecio > 200;-- 18.Muestra el precio máximo, precio mínimo, precio medio y el número total de productos de los fabricantes que tienen un precio medio superior a 200€. No es necesario mostrar el nombre del fabricante, con el identificador del fabricante es suficiente.
+
+
+SELECT DISTINCT fabricante.nombre, MAX(producto.precio) AS precioMax,
+MIN(producto.precio) AS precioMin, AVG(producto.precio) AS promPrecio,
+COUNT(producto.codigoFabricante) AS cantProductos FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre
+HAVING promPrecio > 200;-- 19.Muestra el nombre de cada fabricante, junto con el precio máximo, precio mínimo, precio medio y el número total de productos de los fabricantes que tienen un precio medio superior a 200€. Es necesario mostrar el nombre del fabricante.
+
+SELECT COUNT(codigoFabricante) AS cantProducto FROM producto
+WHERE precio >=180;-- 20.Calcula el número de productos que tienen un precio mayor o igual a 180€.
+
+SELECT fabricante.nombre, COUNT(producto.codigoFabricante) AS cantProducto FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+WHERE producto.precio >=180
+GROUP BY fabricante.nombre;-- 21.Calcula el número de productos que tiene cada fabricante con un precio mayor o igual a 180€.
+
+SELECT DISTINCT codigoFabricante, AVG(precio) AS avgPrecio FROM producto
+GROUP BY codigoFabricante;-- 22.Lista el precio medio los productos de cada fabricante, mostrando solamente el identificador del fabricante.
+
+SELECT DISTINCT fabricante.nombre, AVG(producto.precio) AS avgPrecio FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre;-- 23.Lista el precio medio los productos de cada fabricante, mostrando solamente el nombre del fabricante.
+
+
+SELECT DISTINCT fabricante.nombre FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre
+HAVING AVG(producto.precio) >= 150;-- 24.Lista los nombres de los fabricantes cuyos productos tienen un precio medio mayor o igual a 150€.
+
+
+SELECT fabricante.nombre, COUNT(producto.codigoFabricante) AS cantProducto FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre
+HAVING COUNT(producto.codigoFabricante) = 2
+
+
+
+-- 25.Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos.
+
+
+
+
+
+SELECT * FROM producto
+ORDER BY precio;
+
 
 
 
