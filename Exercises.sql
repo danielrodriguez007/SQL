@@ -334,30 +334,44 @@ ON fabricante.codigo = producto.codigoFabricante
 GROUP BY fabricante.nombre
 HAVING AVG(producto.precio) >= 150;-- 24.Lista los nombres de los fabricantes cuyos productos tienen un precio medio mayor o igual a 150€.
 
-
 SELECT fabricante.nombre, COUNT(producto.codigoFabricante) AS cantProducto FROM fabricante
 LEFT JOIN producto
 ON fabricante.codigo = producto.codigoFabricante
 GROUP BY fabricante.nombre
-HAVING COUNT(producto.codigoFabricante) = 2
+HAVING COUNT(producto.codigoFabricante) = 2; -- 25.Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos.
+
+SELECT fabricante.nombre, count(producto.codigoFabricante) AS cantProducto FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+WHERE producto.precio >= 220
+GROUP BY fabricante.nombre;-- 26.Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. No es necesario mostrar el nombre de los fabricantes que no tienen productos que cumplan la condición.
 
 
-
--- 25.Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos.
-
-
-
-
-
-SELECT * FROM producto
-ORDER BY precio;
+SELECT fabricante.nombre, count(producto.codigoFabricante) AS NomProducto FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+WHERE producto.precio >= 220 
+GROUP BY fabricante.nombre;-- 27.Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €. El listado debe mostrar el nombre de todos los fabricantes, es decir, si hay algún fabricante que no tiene productos con un precio superior o igual a 220€ deberá aparecer en el listado con un valor igual a 0 en el número de productos.
 
 
+SELECT fabricante.nombre, count(producto.codigoFabricante) AS NomProducto FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre
+HAVING SUM(producto.precio) > 1000; -- 28.Devuelve un listado con los nombres de los fabricantes donde la suma del precio de todos sus productos es superior a 1000 €.
 
+SELECT producto.nombre , MAX(producto.precio), fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+GROUP BY fabricante.nombre
+ORDER BY fabricante.nombre;
 
+-- 29.Devuelve un listado con el nombre del producto más caro que tiene cada fabricante. El resultado debe tener tres columnas: nombre del producto, precio y nombre del fabricante. El resultado tiene que estar ordenado alfabéticamente de menor a mayor por el nombre del fabricante.
 
-
-
+SELECT producto.nombre , producto.precio, fabricante.nombre FROM producto
+LEFT JOIN fabricante
+ON producto.codigoFabricante = fabricante.codigo
+ORDER BY fabricante.nombre ASC;
 
 
 
