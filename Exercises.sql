@@ -366,12 +366,10 @@ ON producto.codigoFabricante = fabricante.codigo
 GROUP BY fabricante.nombre
 ORDER BY fabricante.nombre;
 
--- 29.Devuelve un listado con el nombre del producto más caro que tiene cada fabricante. El resultado debe tener tres columnas: nombre del producto, precio y nombre del fabricante. El resultado tiene que estar ordenado alfabéticamente de menor a mayor por el nombre del fabricante.
-
 SELECT producto.nombre , producto.precio, fabricante.nombre FROM producto
 LEFT JOIN fabricante
 ON producto.codigoFabricante = fabricante.codigo
-ORDER BY fabricante.nombre ASC;
+ORDER BY fabricante.nombre ASC;-- 29.Devuelve un listado con el nombre del producto más caro que tiene cada fabricante. El resultado debe tener tres columnas: nombre del producto, precio y nombre del fabricante. El resultado tiene que estar ordenado alfabéticamente de menor a mayor por el nombre del fabricante.
 
 
 
