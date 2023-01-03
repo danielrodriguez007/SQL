@@ -372,5 +372,45 @@ ON producto.codigoFabricante = fabricante.codigo
 ORDER BY fabricante.nombre ASC;-- 29.Devuelve un listado con el nombre del producto más caro que tiene cada fabricante. El resultado debe tener tres columnas: nombre del producto, precio y nombre del fabricante. El resultado tiene que estar ordenado alfabéticamente de menor a mayor por el nombre del fabricante.
 
 
+-- 1.1.7.1 Subconsultas (En la cláusula WHERE) 
+
+SELECT nombre FROM producto
+WHERE codigoFabricante = 2;-- 1.Devuelve todos los productos del fabricante Lenovo. (Sin utilizar INNER JOIN).
+
+SELECT *,  MAX(precio) AS precioMax FROM producto
+WHERE precio = 559;-- 2.Devuelve todos los datos de los productos que tienen el mismo precio que el producto más caro del fabricante Lenovo. (Sin utilizar INNER JOIN).
+
+SELECT nombre, MAX(precio) AS precioMax FROM producto
+WHERE codigoFabricante = 2;-- 3.Lista el nombre del producto más caro del fabricante Lenovo.
+
+SELECT nombre, MIN(precio) AS precioMin FROM producto
+WHERE codigoFabricante = 3;-- 4.Lista el nombre del producto más barato del fabricante Hewlett-Packard.
+
+SELECT * FROM producto
+WHERE precio BETWEEN 550 AND 1000;-- 5.Devuelve todos los productos de la base de datos que tienen un precio mayor o igual al producto más caro del fabricante Lenovo.
+
+SELECT * FROM producto
+WHERE precio > 271 AND codigoFabricante = 2;-- 6.Lista todos los productos del fabricante Asus que tienen un precio superior al precio medio de todos sus productos.
 
 
+-- 1.1.7.2 Subconsultas con ALL y ANY
+
+SELECT * FROM producto
+WHERE precio >= ALL(SELECT precio FROM producto);-- 8.Devuelve el producto más caro que existe en la tabla producto sin hacer uso de MAX, ORDER BY ni LIMIT.
+
+SELECT * FROM producto
+WHERE precio <= ALL(SELECT precio FROM producto);-- 9.Devuelve el producto más barato que existe en la tabla producto sin hacer uso de MIN, ORDER BY ni LIMIT.
+
+SELECT nombre FROM fabricante
+WHERE codigo =ANY(SELECT codigoFabricante FROM producto);-- 10. Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando ALL o ANY).
+
+SELECT nombre FROM fabricante
+WHERE NOT codigo = ANY(SELECT codigoFabricante FROM producto); -- 11.Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando ALL o ANY).
+
+-- 1.1.7.3 Subconsultas con IN y NOT IN
+
+SELECT nombre FROM fabricante
+WHERE codigo IN (SELECT codigoFabricante FROM producto);-- 12.Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando IN o NOT IN).
+
+SELECT nombre FROM fabricante
+WHERE codigo NOT IN (SELECT codigoFabricante FROM producto);-- 13.Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando IN o NOT IN)
