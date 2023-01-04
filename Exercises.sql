@@ -392,7 +392,6 @@ WHERE precio BETWEEN 550 AND 1000;-- 5.Devuelve todos los productos de la base d
 SELECT * FROM producto
 WHERE precio > 271 AND codigoFabricante = 2;-- 6.Lista todos los productos del fabricante Asus que tienen un precio superior al precio medio de todos sus productos.
 
-
 -- 1.1.7.2 Subconsultas con ALL y ANY
 
 SELECT * FROM producto
@@ -414,3 +413,42 @@ WHERE codigo IN (SELECT codigoFabricante FROM producto);-- 12.Devuelve los nombr
 
 SELECT nombre FROM fabricante
 WHERE codigo NOT IN (SELECT codigoFabricante FROM producto);-- 13.Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando IN o NOT IN)
+
+-- 1.1.7.4 Subconsultas con EXISTS y NOT EXISTS
+
+SELECT nombre FROM fabricante
+WHERE EXISTS(SELECT codigoFabricante FROM producto WHERE producto.codigoFabricante = fabricante.codigo);-- 14.Devuelve los nombres de los fabricantes que tienen productos asociados. (Utilizando EXISTS o NOT EXISTS).
+
+SELECT nombre FROM fabricante
+WHERE NOT EXISTS(SELECT codigoFabricante FROM producto WHERE producto.codigoFabricante = fabricante.codigo);-- 15.Devuelve los nombres de los fabricantes que no tienen productos asociados. (Utilizando EXISTS o NOT EXISTS).
+
+-- 1.1.7.5 Subconsultas correlacionadas
+
+SELECT fabricante.nombre, producto.nombre, MAX(producto.precio) FROM fabricante
+LEFT JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre;-- 16.Lista el nombre de cada fabricante con el nombre y el precio de su producto más caro.
+
+-- 17.Devuelve un listado de todos los productos que tienen un precio mayor o igual a la media de todos los productos de su mismo fabricante.
+
+SELECT nombre, MAX(precio) FROM producto
+WHERE  codigoFabricante = 2;-- 18.Lista el nombre del producto más caro del fabricante Lenovo.
+
+-- 1.1.8 Subconsultas (En la cláusula HAVING)
+
+SELECT fabricante.nombre, COUNT(producto.codigoFabricante) AS cantProducto FROM fabricante
+INNER JOIN producto
+ON fabricante.codigo = producto.codigoFabricante
+GROUP BY fabricante.nombre
+HAVING cantProducto = 2;
+-- 18.Devuelve un listado con todos los nombres de los fabricantes que tienen el mismo número de productos que el fabricante Lenovo.
+
+
+
+
+
+
+
+
+
+
