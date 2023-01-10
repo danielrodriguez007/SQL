@@ -209,3 +209,69 @@ INNER JOIN empleado
 ON departamento.id = empleado.id_departamento 
 WHERE empleado.apellido2 IS NULL;-- 10.Devuelve un listado con el nombre de los departamentos donde existe algún empleado cuyo segundo apellido sea NULL. Tenga en cuenta que no debe mostrar nombres de departamentos que estén repetidos.
 
+-- 1.2.5 Consultas multitabla (Composición externa) 
+
+SELECT * FROM empleado
+LEFT JOIN departamento
+ON empleado.id_departamento = departamento.id;-- 1.Devuelve un listado con todos los empleados junto con los datos de los departamentos donde trabajan. Este listado también debe incluir los empleados que no tienen ningún departamento asociado
+
+SELECT * FROM empleado
+LEFT JOIN departamento
+ON empleado.id_departamento = departamento.id
+WHERE empleado.id_departamento IS NULL;-- 2.Devuelve un listado donde sólo aparezcan aquellos empleados que no tienen ningún departamento asociado.
+
+SELECT * FROM departamento 
+LEFT JOIN empleado
+ON departamento.id = empleado.id_departamento
+WHERE empleado.id_departamento IS NULL;-- 3.Dvuelve un listado donde sólo aparezcan aquellos departamentos que no tienen ningún empleado asociado.
+
+SELECT * FROM empleado RIGHT JOIN departamento ON empleado.id_departamento = departamento.id 
+UNION
+SELECT * FROM empleado LEFT JOIN departamento ON empleado.id_departamento = departamento.id;-- 4.Devuelve un listado con todos los empleados junto con los datos de los departamentos donde trabajan. El listado debe incluir los empleados que no tienen ningún departamento asociado y los departamentos que no tienen ningún empleado asociado. Ordene el listado alfabéticamente por el nombre del departamento
+
+SELECT * FROM empleado RIGHT JOIN departamento ON empleado.id_departamento = departamento.id WHERE empleado.id IS NULL
+UNION
+SELECT * FROM empleado LEFT JOIN departamento ON empleado.id_departamento = departamento.id WHERE departamento.id IS NULL;-- 5.Devuelve un listado con los empleados que no tienen ningún departamento asociado y los departamentos que no tienen ningún empleado asociado. Ordene el listado alfabéticamente por el nombre del departamento.
+
+-- 1.2.6 Consultas resumen
+
+SELECT SUM(presupuesto) AS presupuestoTotal FROM departamento;--1.Calcula la suma del presupuesto de todos los departamentos.
+
+SELECT AVG(presupuesto) AS presupuestoPromedio FROM departamento;-- 2.Calcula la media del presupuesto de todos los departamentos.
+
+SELECT MIN(presupuesto) AS presupuestoMin FROM departamento;-- 3.Calcula el valor mínimo del presupuesto de todos los departamentos.
+
+SELECT * FROM departamento
+WHERE presupuesto = (SELECT MIN(presupuesto) FROM departamento); -- 4.Calcula el nombre del departamento y el presupuesto que tiene asignado, del departamento con menor presupuesto.
+
+SELECT id,nombre,CONCAT(presupuesto-gastos) AS presupuestoMax FROM departamento;-- 5.Calcula el valor máximo del presupuesto de todos los departamentos.
+
+SELECT * FROM departamento
+WHERE presupuesto = (SELECT MAX(presupuesto) FROM departamento);-- 6.Calcula el nombre del departamento y el presupuesto que tiene asignado, del departamento con mayor presupuesto.
+
+SELECT COUNT(id) FROM empleado;-- 7.Calcula el número total de empleados que hay en la tabla empleado.
+
+SELECT COUNT(id) FROM empleado
+WHERE apellido2 IS NOT NULL;-- 8.Calcula el número de empleados que no tienen NULL en su segundo apellido.
+
+SELECT departamento.nombre, COUNT(empleado.id) AS cantEmpleados FROM departamento
+LEFT JOIN empleado
+ON departamento.id = empleado.id_departamento
+GROUP BY departamento.nombre;-- 9.Calcula el número de empleados que hay en cada departamento. Tienes que devolver dos columnas, una con el nombre del departamento y otra con el número de empleados que tiene asignados.
+
+SELECT departamento.nombre, COUNT(empleado.id) as cantEmpleados FROM departamento
+LEFT JOIN empleado
+ON departamento.id = empleado.id_departamento
+GROUP BY departamento.nombre
+HAVING cantEmpleados >=2;-- 10.Calcula el nombre de los departamentos que tienen más de 2 empleados. El resultado debe tener dos columnas, una con el nombre del departamento y otra con el número de empleados que tiene asignados.
+
+SELECT departamento.nombre, COUNT(empleado.id) AS cantEmpleados FROM departamento
+LEFT JOIN empleado
+ON departamento.id = empleado.id_departamento
+GROUP BY departamento.nombre;-- 11.Calcula el número de empleados que trabajan en cada uno de los departamentos. El resultado de esta consulta también tiene que incluir aquellos departamentos que no tienen ningún empleado asociado.
+
+SELECT departamento.nombre, COUNT(empleado.id) as cantEmpleados FROM departamento
+LEFT JOIN empleado
+ON departamento.id = empleado.id_departamento
+WHERE departamento.presupuesto >= 200000
+GROUP BY departamento.nombre;-- 12.Calcula el número de empleados que trabajan en cada unos de los departamentos que tienen un presupuesto mayor a 200000 euros.
