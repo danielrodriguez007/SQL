@@ -158,7 +158,7 @@ WHERE id_departamento IN(2,4,5); -- 36.Lista los nombres, apellidos y nif de los
 
 -- 1.2.4 Consultas multitabla (Composición interna) 
 
-SELECT CONCAT(COALESCE(empleado.nombre, ' '),COALESCE(empleado.apellido1, ' '),COALESCE(empleado.apellido2, ' ')) AS nombreCompleto,
+SELECT CONCAT(COALESCE(empleado.nombre, '-'),COALESCE(empleado.apellido1, ''),COALESCE(empleado.apellido2, '')) AS nombreCompleto,
 departamento.nombre FROM empleado
 INNER JOIN departamento
 ON empleado.id_departamento = departamento.id; -- 1.Devuelve un listado con los empleados y los datos de los departamentos donde trabaja cada uno.
@@ -275,3 +275,44 @@ LEFT JOIN empleado
 ON departamento.id = empleado.id_departamento
 WHERE departamento.presupuesto >= 200000
 GROUP BY departamento.nombre;-- 12.Calcula el número de empleados que trabajan en cada unos de los departamentos que tienen un presupuesto mayor a 200000 euros.
+
+-- 1.2.7 Subconsultas 
+
+SELECT * FROM empleado
+WHERE id_departamento = (SELECT id FROM departamento WHERE nombre = 'Sistemas') ;-- 1.Devuelve un listado con todos los empleados que tiene el departamento de Sistemas. (Sin utilizar INNER JOIN).
+
+SELECT nombre,presupuesto FROM departamento
+WHERE presupuesto=(SELECT MAX(presupuesto) FROM departamento);-- 2.Devuelve el nombre del departamento con mayor presupuesto y la cantidad que tiene asignada.
+
+SELECT nombre,presupuesto FROM departamento
+WHERE presupuesto=(SELECT MIN(presupuesto) FROM departamento);-- 3.Devuelve el nombre del departamento con menor presupuesto y la cantidad que tiene asignada.
+
+-- 1.2.7.2 Subconsultas con ALL y ANY
+
+SELECT nombre, presupuesto FROM departamento
+WHERE presupuesto>=ALL(SELECT presupuesto FROM departamento);-- 4.Devuelve el nombre del departamento con mayor presupuesto y la cantidad que tiene asignada. Sin hacer uso de MAX, ORDER BY ni LIMIT.
+
+SELECT nombre, presupuesto FROM departamento
+WHERE presupuesto<=ALL(SELECT presupuesto FROM departamento);-- 5.Devuelve el nombre del departamento con menor presupuesto y la cantidad que tiene asignada. Sin hacer uso de MIN, ORDER BY ni LIMIT.
+
+SELECT nombre FROM departamento
+WHERE id=ANY(SELECT id_departamento FROM empleado);-- 6.Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando ALL o ANY)
+
+SELECT nombre FROM departamento
+WHERE id=ANY(SELECT id_departamento FROM empleado) IS NULL;-- 7.Devuelve los nombres de los departamentos que no tienen empleados asociados. (Utilizando ALL o ANY).
+
+-- 1.2.7.3 Subconsultas con IN y NOT IN 
+
+SELECT nombre FROM departamento
+WHERE id IN (SELECT id_departamento FROM empleado);-- 8.Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando IN o NOT IN).
+
+SELECT nombre FROM departamento
+WHERE id IN (SELECT id_departamento FROM empleado) IS NULL;-- 9.Devuelve los nombres de los departamentos que no tienen empleados asociados. (Utilizando IN o NOT IN).
+
+-- 1.2.7.4 Subconsultas con EXISTS y NOT EXISTS 
+
+SELECT nombre FROM departamento
+WHERE EXISTS (SELECT id_departamento FROM empleado WHERE departamento.id = empleado.id_departamento);-- 10.Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando EXISTS o NOT EXISTS).
+
+SELECT nombre FROM departamento
+WHERE NOT EXISTS (SELECT id_departamento FROM empleado WHERE departamento.id = empleado.id_departamento);-- 11.Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando EXISTS o NOT EXISTS)
