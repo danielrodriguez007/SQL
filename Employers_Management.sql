@@ -316,3 +316,4 @@ WHERE EXISTS (SELECT id_departamento FROM empleado WHERE departamento.id = emple
 
 SELECT nombre FROM departamento
 WHERE NOT EXISTS (SELECT id_departamento FROM empleado WHERE departamento.id = empleado.id_departamento);-- 11.Devuelve los nombres de los departamentos que tienen empleados asociados. (Utilizando EXISTS o NOT EXISTS)
+
