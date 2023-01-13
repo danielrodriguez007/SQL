@@ -139,3 +139,50 @@ ON cliente.id = pedido.id_cliente
 JOIN comercial
 ON comercial.id = pedido.id_comercial
 WHERE comercial.id = 1;-- 7.Devuelve el nombre de todos los clientes que han realizado algún pedido con el comercial Daniel Sáez Vega.
+
+-- 1.3.5 Consultas multitabla (Composición externa)
+
+SELECT cliente.*, pedido.* FROM cliente
+LEFT JOIN pedido
+ON cliente.id = pedido.id_cliente;-- 1.Devuelve un listado con todos los clientes junto con los datos de los pedidos que han realizado. Este listado también debe incluir los clientes que no han realizado ningún pedido. El listado debe estar ordenado alfabéticamente por el primer apellido, segundo apellido y nombre de los clientes.
+
+SELECT comercial.*, pedido.* FROM comercial
+LEFT JOIN pedido
+ON comercial.id = pedido.id_comercial;-- 2.Devuelve un listado con todos los comerciales junto con los datos de los pedidos que han realizado. Este listado también debe incluir los comerciales que no han realizado ningún pedido. El listado debe estar ordenado alfabéticamente por el primer apellido, segundo apellido y nombre de los comerciales.
+
+SELECT cliente.*, pedido.* FROM cliente
+RIGHT JOIN pedido
+ON cliente.id = pedido.id_cliente
+ORDER BY cliente.id;-- 3.Devuelve un listado que solamente muestre los clientes que no han realizado ningún pedido.
+
+SELECT comercial.*, pedido.* FROM comercial
+LEFT JOIN pedido
+ON comercial.id = pedido.id_comercial
+WHERE pedido.id IS NULL;-- 4.Devuelve un listado que solamente muestre los comerciales que no han realizado ningún pedido.
+
+SELECT * FROM cliente
+RIGHT JOIN pedido
+ON cliente.id = pedido.id_cliente
+RIGHT JOIN comercial
+ON comercial.id = pedido.id_comercial
+WHERE pedido.id IS NULL;--5.Devuelve un listado con los clientes que no han realizado ningún pedido y de los comerciales que no han participado en ningún pedido. Ordene el listado alfabéticamente por los apellidos y el nombre. En en listado deberá diferenciar de algún modo los clientes y los comerciales.
+
+--1.3.6 Consultas resumen
+
+SELECT COUNT(id) AS cantidadPedidos FROM pedido;--1.Calcula la cantidad total que suman todos los pedidos que aparecen en la tabla pedido.
+
+SELECT AVG(id) FROM pedido;--2.Calcula la cantidad media de todos los pedidos que aparecen en la tabla pedido
+
+SELECT COUNT(DISTINCT id_comercial) FROM pedido;--3.Calcula el número total de comerciales distintos que aparecen en la tabla pedido.
+
+SELECT COUNT(id) FROM cliente;--4.Calcula el número total de clientes que aparecen en la tabla cliente.
+
+SELECT * FROM pedido
+WHERE total = (SELECT MAX(total) FROM pedido);--5.Calcula cuál es la mayor cantidad que aparece en la tabla pedido.
+
+SELECT MIN(total) FROM pedido;--6.Calcula cuál es la menor cantidad que aparece en la tabla pedido.
+
+SELECT ciudad, MAX(categoria) FROM cliente
+WHERE categoria = ANY(SELECT categoria FROM cliente)
+GROUP BY ciudad;--7.Calcula cuál es el valor máximo de categoría para cada una de las ciudades que aparece en la tabla cliente.
+
