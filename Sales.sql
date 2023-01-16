@@ -186,3 +186,69 @@ SELECT ciudad, MAX(categoria) FROM cliente
 WHERE categoria = ANY(SELECT categoria FROM cliente)
 GROUP BY ciudad;--7.Calcula cuál es el valor máximo de categoría para cada una de las ciudades que aparece en la tabla cliente.
 
+SELECT pedido.fecha,cliente.id, cliente.nombre,cliente.apellido1,cliente.apellido2, COUNT(pedido.id) FROM cliente
+LEFT JOIN pedido
+ON cliente.id = pedido.id_cliente
+GROUP BY pedido.fecha
+ORDER BY cliente.id;--8.Calcula cuál es el máximo valor de los pedidos realizados durante el mismo día para cada uno de los clientes. Es decir, el mismo cliente puede haber realizado varios pedidos de diferentes cantidades el mismo día. Se pide que se calcule cuál es el pedido de máximo valor para cada uno de los días en los que un cliente ha realizado un pedido. Muestra el identificador del cliente, nombre, apellidos, la fecha y el valor de la cantidad.
+
+SELECT pedido.fecha,cliente.id, cliente.nombre,cliente.apellido1,cliente.apellido2, MAX(pedido.total) AS Total FROM cliente
+LEFT JOIN pedido
+ON cliente.id = pedido.id_cliente
+GROUP BY pedido.fecha
+HAVING total >= 2000
+ORDER BY cliente.id;--9.Calcula cuál es el máximo valor de los pedidos realizados durante el mismo día para cada uno de los clientes, teniendo en cuenta que sólo queremos mostrar aquellos pedidos que superen la cantidad de 2000 €.
+
+SELECT pedido.fecha,comercial.nombre,comercial.apellido1, pedido.total FROM comercial
+LEFT JOIN pedido
+ON comercial.id = pedido.id_comercial
+WHERE pedido.fecha = '2016-08-17';--10.Calcula el máximo valor de los pedidos realizados para cada uno de los comerciales durante la fecha 2016-08-17. Muestra el identificador del comercial, nombre, apellidos y total.
+
+SELECT pedido.fecha,cliente.id, cliente.nombre,cliente.apellido1,cliente.apellido2, COUNT(pedido.id) FROM cliente
+LEFT JOIN pedido
+ON cliente.id = pedido.id_cliente
+GROUP BY pedido.fecha
+ORDER BY cliente.id;--11.Devuelve un listado con el identificador de cliente, nombre y apellidos y el número total de pedidos que ha realizado cada uno de clientes. Tenga en cuenta que pueden existir clientes que no han realizado ningún pedido. Estos clientes también deben aparecer en el listado indicando que el número de pedidos realizados es 0.
+
+SELECT pedido.fecha,cliente.id, cliente.nombre,cliente.apellido1,cliente.apellido2, COUNT(pedido.id) FROM cliente
+LEFT JOIN pedido
+ON cliente.id = pedido.id_cliente
+WHERE pedido.fecha BETWEEN '2017-01-01' AND '2017-12-31'
+GROUP BY cliente.id
+ORDER BY cliente.id;--12.Devuelve un listado con el identificador de cliente, nombre y apellidos y el número total de pedidos que ha realizado cada uno de clientes durante el año 2017.
+
+SELECT cliente.id, cliente.nombre, cliente.apellido1, MAX(pedido.total) FROM cliente
+LEFT JOIN pedido
+ON cliente.id = pedido.id_cliente
+GROUP BY cliente.id;--13.Devuelve un listado que muestre el identificador de cliente, nombre, primer apellido y el valor de la máxima cantidad del pedido realizado por cada uno de los clientes. El resultado debe mostrar aquellos clientes que no han realizado ningún pedido indicando que la máxima cantidad de sus pedidos realizados es 0. Puede hacer uso de la función IFNULL.
+
+SELECT year(fecha) AS año, MAX(total) AS total FROM pedido
+GROUP BY año
+ORDER BY año ASC;  --14.Devuelve cuál ha sido el pedido de máximo valor que se ha realizado cada año.
+
+SELECT YEAR(fecha) AS año, COUNT(id) AS Cant FROM pedido
+GROUP BY año
+ORDER BY año ASC; --15.Devuelve el número total de pedidos que se han realizado cada año.
+
+
+--1.3.7 Subconsultas
+
+-- 1.3.7.1 Con operadores básicos de comparación
+
+SELECT * FROM pedido
+WHERE id_cliente = (SELECT id FROM cliente WHERE nombre = 'Adela');--1.Devuelve un listado con todos los pedidos que ha realizado Adela Salas Díaz. (Sin utilizar INNER JOIN).
+
+SELECT COUNT(id) FROM pedido
+WHERE id_comercial = (SELECT id FROM comercial WHERE nombre = 'Daniel');--2.Devuelve el número de pedidos en los que ha participado el comercial Daniel Sáez Vega. (Sin utilizar INNER JOIN)
+
+SELECT id, nombre, apellido1 FROM cliente
+WHERE id = (SELECT id_cliente FROM pedido WHERE total = (SELECT MAX(total) FROM pedido
+WHERE YEAR(fecha) ='2019')); -- 3.Devuelve los datos del cliente que realizó el pedido más caro en el año 2019. (Sin utilizar INNER JOIN)
+
+SELECT fecha,MIN(total) AS PedidoMin FROM pedido
+WHERE id_cliente = (SELECT id FROM cliente WHERE nombre ='Pepe');-- 4.Devuelve la fecha y la cantidad del pedido de menor valor realizado por el cliente Pepe Ruiz Santana.
+
+SELECT * FROM cliente
+WHERE
+id = ANY(SELECT id_cliente FROM pedido WHERE YEAR(fecha)='2017' AND total >= (SELECT AVG(total) FROM pedido));--5.Devuelve un listado con los datos de los clientes y los pedidos, de todos los clientes que han realizado un pedido durante el año 2017 con un valor mayor o igual al valor medio de los pedidos realizados durante ese mismo año.
+
