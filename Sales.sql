@@ -252,3 +252,29 @@ SELECT * FROM cliente
 WHERE
 id = ANY(SELECT id_cliente FROM pedido WHERE YEAR(fecha)='2017' AND total >= (SELECT AVG(total) FROM pedido));--5.Devuelve un listado con los datos de los clientes y los pedidos, de todos los clientes que han realizado un pedido durante el año 2017 con un valor mayor o igual al valor medio de los pedidos realizados durante ese mismo año.
 
+--1.3.7.2 Subconsultas con ALL y ANY
+
+SELECT * FROM pedido
+WHERE total >= ALL(SELECT total FROM pedido);--6.Devuelve el pedido más caro que existe en la tabla pedido si hacer uso de MAX, ORDER BY ni LIMIT.
+
+SELECT * FROM cliente
+WHERE id > ALL(SELECT id_cliente FROM pedido);--7.Devuelve un listado de los clientes que no han realizado ningún pedido. (Utilizando ANY o ALL).
+
+SELECT * FROM comercial
+WHERE id <> ALL(SELECT id_comercial FROM pedido);--8.Devuelve un listado de los comerciales que no han realizado ningún pedido. (Utilizando ANY o ALL).
+
+--1.3.7.3 Subconsultas con IN y NOT IN
+
+SELECT * FROM cliente
+WHERE id NOT IN (SELECT id_cliente FROM pedido);--9.Devuelve un listado de los clientes que no han realizado ningún pedido. (Utilizando IN o NOT IN).
+
+SELECT * FROM comercial
+WHERE id NOT IN (SELECT id_comercial FROM pedido);--10.Devuelve un listado de los comerciales que no han realizado ningún pedido. (Utilizando IN o NOT IN).
+
+--1.3.7.4 Subconsultas con EXISTS y NOT EXISTS
+
+SELECT * FROM cliente
+WHERE NOT EXISTS (SELECT id_cliente FROM pedido WHERE cliente.id = pedido.id_cliente);--11.Devuelve un listado de los clientes que no han realizado ningún pedido. (Utilizando EXISTS o NOT EXISTS).
+
+SELECT * FROM comercial
+WHERE NOT EXISTS(SELECT id_comercial from pedido WHERE comercial.id = pedido.id_comercial);--12.Devuelve un listado de los comerciales que no han realizado ningún pedido. (Utilizando EXISTS o NOT EXISTS).
