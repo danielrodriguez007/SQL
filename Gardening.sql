@@ -1002,4 +1002,59 @@ ORDER BY precio_venta DESC;--15.Devuelve un listado con todos los productos que 
 
 SELECT * FROM cliente
 WHERE ciudad LIKE 'Madrid%' AND codigo_empleado_rep_ventas IN (11,30);--16.Devuelve un listado con todos los clientes que sean de la ciudad de Madrid y cuyo representante de ventas tenga el código de empleado 11 o 30.
+
+--1.4.5 Consultas multitabla (Composición interna)
+
+SELECT cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto FROM cliente
+INNER JOIN empleado
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+WHERE empleado.puesto LIKE 'Representante%';--1.Obtén un listado con el nombre de cada cliente y el nombre y apellido de su representante de ventas.
+
+SELECT cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto, pago.forma_pago, pago.id_transaccion FROM cliente
+INNER JOIN empleado 
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN pago
+ON cliente.codigo_cliente = pago.codigo_cliente;--2.Muestra el nombre de los clientes que hayan realizado pagos junto con el nombre de sus representantes de ventas.
+
+SELECT cliente.codigo_cliente,cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto FROM cliente
+INNER JOIN empleado 
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+LEFT JOIN pago
+ON cliente.codigo_cliente = pago.codigo_cliente
+WHERE empleado.puesto LIKE 'Representante%' AND cliente.codigo_cliente NOT IN (SELECT codigo_cliente FROM pago);--3.Muestra el nombre de los clientes que no hayan realizado pagos junto con el nombre de sus representantes de ventas.
+
+SELECT cliente.codigo_cliente,cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto, oficina.ciudad FROM cliente
+INNER JOIN empleado 
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+LEFT JOIN pago
+ON cliente.codigo_cliente = pago.codigo_cliente
+INNER JOIN oficina
+ON empleado.codigo_oficina = oficina.codigo_oficina
+WHERE empleado.puesto LIKE 'Representante%' AND cliente.codigo_cliente IN (SELECT codigo_cliente FROM pago);--4.Devuelve el nombre de los clientes que han hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
+
+SELECT cliente.codigo_cliente,cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto, oficina.ciudad FROM cliente
+INNER JOIN empleado 
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+LEFT JOIN pago
+ON cliente.codigo_cliente = pago.codigo_cliente
+INNER JOIN oficina
+ON empleado.codigo_oficina = oficina.codigo_oficina
+WHERE empleado.puesto LIKE 'Representante%' AND cliente.codigo_cliente NOT IN (SELECT codigo_cliente FROM pago);--5.Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
+
+
+SELECT cliente.codigo_cliente,cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto, oficina.ciudad FROM cliente
+INNER JOIN empleado 
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+LEFT JOIN pago
+ON cliente.codigo_cliente = pago.codigo_cliente
+INNER JOIN oficina
+ON empleado.codigo_oficina = oficina.codigo_oficina
+WHERE oficina;--6.Lista la dirección de las oficinas que tengan clientes en Fuenlabrada.
+
+
+
+
+
+SELECT * FROM oficina;
+
 SHOW TABLES;
