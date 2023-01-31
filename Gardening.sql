@@ -1041,7 +1041,6 @@ INNER JOIN oficina
 ON empleado.codigo_oficina = oficina.codigo_oficina
 WHERE empleado.puesto LIKE 'Representante%' AND cliente.codigo_cliente NOT IN (SELECT codigo_cliente FROM pago);--5.Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
 
-
 SELECT cliente.codigo_cliente,cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.puesto, oficina.ciudad FROM cliente
 INNER JOIN empleado 
 ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
@@ -1049,12 +1048,48 @@ LEFT JOIN pago
 ON cliente.codigo_cliente = pago.codigo_cliente
 INNER JOIN oficina
 ON empleado.codigo_oficina = oficina.codigo_oficina
-WHERE oficina;--6.Lista la dirección de las oficinas que tengan clientes en Fuenlabrada.
+WHERE oficina.ciudad LIKE 'Fuenlabrada%';--6.Lista la dirección de las oficinas que tengan clientes en Fuenlabrada.
+
+SELECT cliente.codigo_cliente,cliente.nombre_cliente, empleado.nombre, empleado.apellido1, empleado.apellido2, oficina.ciudad FROM cliente
+INNER JOIN empleado
+ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN oficina
+ON empleado.codigo_oficina = oficina.codigo_oficina
+WHERE empleado.puesto LIKE 'Representante%';--7.Devuelve el nombre de los clientes y el nombre de sus representantes junto con la ciudad de la oficina a la que pertenece el representante.
+
+SELECT DISTINCT CONCAT(j.nombre,'-',j.apellido1,'-',j.apellido2) AS empleado,
+                CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS jefe                 
+FROM empleado j
+INNER JOIN empleado e
+ON e.codigo_empleado = j.codigo_jefe
+ORDER BY jefe;--8.Devuelve un listado con el nombre de los empleados junto con el nombre de sus jefes.
+
+SELECT DISTINCT CONCAT(j.nombre,'-',j.apellido1,'-',j.apellido2) AS empleado,
+                CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS jefe, 
+                CONCAT(jj.nombre,'-',jj.apellido1,'-',jj.apellido2) AS jefeDeljefe  
+FROM empleado j
+INNER JOIN empleado e
+ON e.codigo_empleado = j.codigo_jefe
+INNER JOIN empleado jj
+ON e.codigo_jefe = jj.codigo_empleado
+ORDER BY jefe;--9.Devuelve un listado que muestre el nombre de cada empleados, el nombre de su jefe y el nombre del jefe de sus jefe
+
+SELECT c.nombre_cliente,p.fecha_esperada,p.fecha_entrega, DATEDIFF(p.fecha_entrega,p.fecha_esperada) AS diasPasados FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente
+HAVING diasPasados>0
+ORDER BY diasPasados;--10.Devuelve el nombre de los clientes a los que no se les ha entregado a tiempo un pedido
+
+SELECT gp.gama,c.nombre_cliente FROM gama_producto gp
+INNER JOIN producto p
+ON gp.gama=p.gama
+INNER JOIN detalle_pedido dp
+ON p.codigo_producto=dp.codigo_producto
+INNER JOIN pedido pe
+ON dp.codigo_pedido=pe.codigo_pedido
+INNER JOIN cliente c
+ON pe.codigo_cliente=c.codigo_cliente;--11.Devuelve un listado de las diferentes gamas de producto que ha comprado cada cliente.
 
 
-
-
-
-SELECT * FROM oficina;
 
 SHOW TABLES;
