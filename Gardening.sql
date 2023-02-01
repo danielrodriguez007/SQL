@@ -2,6 +2,8 @@ DROP DATABASE IF EXISTS Gardening;
 CREATE DATABASE Gardening CHARACTER SET utf8mb4;
 USE Gardening;
 
+SHOW TABLES;
+
 CREATE TABLE oficina (
     codigo_oficina VARCHAR(10) NOT NULL,
     ciudad VARCHAR(30) NOT NULL,
@@ -72,7 +74,6 @@ CREATE TABLE pedido(
     Foreign Key (codigo_cliente) REFERENCES cliente(codigo_cliente)
 );
 
-ALTER TABLE producto ADD precio_proveedor NUMERIC(15,2) DEFAULT NULL;
 
 CREATE TABLE producto(
     codigo_producto VARCHAR(15) NOT NULL,
@@ -83,6 +84,7 @@ CREATE TABLE producto(
     descripcion TEXT NULL,
     cantidad_en_stock SMALLINT NOT NULL,
     precio_venta numeric(15,2) DEFAULT NULL,
+    precio_proveedor NUMERIC(15,2) DEFAULT NULL,
     PRIMARY KEY(codigo_producto),
     Foreign Key (gama) REFERENCES gama_producto(gama)
 );
@@ -91,7 +93,7 @@ CREATE TABLE detalle_pedido(
     codigo_pedido INTEGER NOT NULL,
     codigo_producto VARCHAR(15) NOT NULL,
     cantidad INTEGER NOT NULL,
-    precio_unidad numeric(15,2) NOT NULL,
+    precio_unidad NUMERIC(15,2) NOT NULL,
     numero_linea SMALLINT NOT NULL,
     PRIMARY KEY(codigo_pedido, codigo_producto),
     Foreign Key (codigo_pedido) REFERENCES pedido(codigo_pedido),
@@ -201,7 +203,6 @@ INSERT INTO cliente VALUES (37,'The Magic Garden','Richard','Mcain','926523468',
 INSERT INTO cliente VALUES (38,'El Jardin Viviente S.L','Justin','Smith','2 8005-7161','2 8005-7162','176 Cumberland Street The rocks',NULL,'Sydney','Nueva Gales del Sur','Australia','2003',31,8000);
 
 SELECT * FROM pedido;
-DELETE FROM pedido;
 
 INSERT INTO pedido VALUES (1,'2006-01-17','2006-01-19','2006-01-19','Entregado','Pagado a plazos',5);
 INSERT INTO pedido VALUES (2,'2007-10-23','2007-10-28','2007-10-26','Entregado','La entrega llego antes de lo esperado',5);
@@ -1090,6 +1091,67 @@ ON dp.codigo_pedido=pe.codigo_pedido
 INNER JOIN cliente c
 ON pe.codigo_cliente=c.codigo_cliente;--11.Devuelve un listado de las diferentes gamas de producto que ha comprado cada cliente.
 
+--1.4.6 Consultas multitabla (Composición externa)
+
+SELECT c.nombre_cliente FROM cliente c
+LEFT JOIN pago p
+ON c.codigo_cliente = p.codigo_cliente
+WHERE c.codigo_cliente NOT IN (SELECT codigo_cliente FROM pago); --1.Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago
+
+SELECT c.nombre_cliente FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente
+WHERE c.codigo_cliente NOT IN (SELECT codigo_cliente FROM pedido);--2.Devuelve un listado que muestre solamente los clientes que no han realizado ningún pedido.
+
+SELECT c.nombre_cliente FROM cliente c
+LEFT JOIN pago p
+ON c.codigo_cliente = p.codigo_cliente
+LEFT JOIN pedido pe
+ON c.codigo_cliente=pe.codigo_cliente
+WHERE c.codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pedido) AND
+    c.codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pago);--3.Devuelve un listado que muestre los clientes que no han realizado ningún pago y los que no han realizado ningún pedido.
+
+SELECT CONCAT(nombre,'-',apellido1,'-',apellido2) FROM empleado
+WHERE codigo_oficina IS NULL;--4.Devuelve un listado que muestre solamente los empleados que no tienen una oficina asociada.
+
+SELECT e.codigo_empleado, CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS empleado, e.puesto FROM empleado e
+LEFT JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE e.codigo_empleado NOT IN 
+    (SELECT codigo_empleado_rep_ventas FROM cliente);--5.Devuelve un listado que muestre solamente los empleados que no tienen un cliente asociado.
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS empleado, e.puesto,
+o.codigo_oficina, o.ciudad FROM empleado e
+LEFT JOIN oficina o
+ON e.codigo_oficina = o.codigo_oficina
+LEFT JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE e.codigo_empleado NOT IN
+    (SELECT codigo_empleado_rep_ventas FROM cliente); --6.Devuelve un listado que muestre solamente los empleados que no tienen un cliente asociado junto con los datos de la oficina donde trabajan.
+
+--7.Devuelve un listado que muestre los empleados que no tienen una oficina asociada y los que no tienen un cliente asociado.
+
+SELECT p.codigo_producto, p.nombre, p.gama FROM producto p
+LEFT JOIN detalle_pedido dp
+ON p.codigo_producto = dp.codigo_producto
+WHERE p.codigo_producto NOT IN
+    (SELECT codigo_producto FROM detalle_pedido)
+ORDER BY p.nombre;--8.Devuelve un listado de los productos que nunca han aparecido en un pedido.
+
+SELECT p.codigo_producto, p.nombre, p.gama,
+gp.descripcion_texto, gp.imagen FROM producto p
+LEFT JOIN gama_producto gp 
+ON p.gama = gp.gama
+LEFT JOIN detalle_pedido dp
+ON p.codigo_producto = dp.codigo_producto
+WHERE p.codigo_producto NOT IN
+    (SELECT codigo_producto FROM detalle_pedido);--9.Devuelve un listado de los productos que nunca han aparecido en un pedido. El resultado debe mostrar el nombre, la descripción y la imagen del producto.
+
+
 
 
 SHOW TABLES;
+SELECT * FROM gama_producto;
+SELECT * FROM detalle_pedido;
