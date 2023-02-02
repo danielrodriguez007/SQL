@@ -1149,9 +1149,79 @@ ON p.codigo_producto = dp.codigo_producto
 WHERE p.codigo_producto NOT IN
     (SELECT codigo_producto FROM detalle_pedido);--9.Devuelve un listado de los productos que nunca han aparecido en un pedido. El resultado debe mostrar el nombre, la descripción y la imagen del producto.
 
+SELECT o.* FROM oficina o
+LEFT JOIN empleado e
+ON o.codigo_oficina = e.codigo_oficina
+WHERE o.codigo_oficina NOT IN
+    (SELECT codigo_oficina FROM empleado);--10.Devuelve las oficinas donde no trabajan ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama Frutales
+
+SELECT c.nombre_cliente FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente
+LEFT JOIN pago pa
+ON c.codigo_cliente = pa.codigo_cliente
+WHERE c.codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pedido);--11.Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS empleado FROM empleado e
+LEFT JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE e.codigo_empleado NOT IN
+    (SELECT codigo_empleado_rep_ventas FROM cliente);--12.Devuelve un listado con los datos de los empleados que no tienen clientes asociados y el nombre de su jefe asociado.
+
+
+--1.4.7 Consultas resumen
+
+SELECT count(codigo_empleado) AS cantEmpleados FROM empleado;--1.¿Cuántos empleados hay en la compañía?
+
+SELECT pais, COUNT(codigo_cliente) AS cantClientes FROM cliente
+GROUP BY pais
+ORDER BY pais ASC;--2.¿Cuántos clientes tiene cada país?
+
+SELECT YEAR(fecha_pago) AS año, forma_pago FROM pago
+WHERE YEAR(fecha_pago) = 2009
+GROUP BY año;--3.¿Cuál fue el pago medio en 2009?
+
+SELECT estado, COUNT(codigo_pedido) AS cantPedido FROM pedido
+GROUP BY estado
+ORDER BY cantPedido DESC;--4.¿Cuántos pedidos hay en cada estado? Ordena el resultado de forma descendente por el número de pedidos.
+
+SELECT MAX(precio_venta) AS prodCaro, MIN(precio_venta) AS prodBarato FROM producto;--5.Calcula el precio de venta del producto más caro y más barato en una misma consulta.
+
+SELECT COUNT(codigo_cliente) AS cantClientes FROM cliente;--6.Calcula el número de clientes que tiene la empresa.
+
+SELECT ciudad, COUNT(codigo_cliente) AS cantCliente FROM cliente
+WHERE ciudad LIKE 'Madrid%';--7.¿Cuántos clientes existen con domicilio en la ciudad de Madrid?
+
+SELECT ciudad, COUNT(codigo_cliente) AS cantClientes FROM cliente
+WHERE ciudad LIKE 'M%'
+GROUP BY ciudad;--8.Calcula cuántos clientes tiene cada una de las ciudades que empiezan por M?
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS empleado,e.puesto, COUNT(c.codigo_cliente) AS cantClientes
+FROM empleado e
+LEFT JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE e.puesto LIKE 'Representante%'
+GROUP BY e.codigo_empleado;--9.Devuelve el nombre de los representantes de ventas y el número de clientes al que atiende cada uno.
+
+SELECT COUNT(c.codigo_cliente) as cantClientes FROM cliente c
+LEFT JOIN empleado e
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE c.codigo_empleado_rep_ventas NOT IN
+    (SELECT codigo_empleado FROM empleado );--10.Calcula el número de clientes que no tiene asignado representante de ventas.
+
+SELECT CONCAT(c.nombre_contacto,'-',c.apellido_contacto) AS nombreCliente,
+MIN(p.fecha_pago) AS fechaAntigua, MAX(p.fecha_pago) AS fechaReciente FROM cliente c
+LEFT JOIN pago p
+ON c.codigo_cliente = p.codigo_cliente
+GROUP BY c.codigo_cliente;--11.Calcula la fecha del primer y último pago realizado por cada uno de los clientes. El listado deberá mostrar el nombre y los apellidos de cada cliente.
 
 
 
+
+
+
+USE Gardening;
 SHOW TABLES;
-SELECT * FROM gama_producto;
-SELECT * FROM detalle_pedido;
+SELECT * FROM cliente;
+SELECT * FROM empleado;
