@@ -39,8 +39,6 @@ CREATE Table gama_producto(
     PRIMARY KEY (gama)
 );
 
-ALTER TABLE cliente MODIFY COLUMN linea_direccion2 VARCHAR(50) DEFAULT NULL;
-
 CREATE TABLE cliente(
   codigo_cliente INTEGER NOT NULL,
   nombre_cliente VARCHAR(50) NOT NULL,
@@ -66,7 +64,7 @@ CREATE TABLE pedido(
     codigo_pedido INTEGER NOT NULL,
     fecha_pedido DATE NOT NULL,
     fecha_esperada DATE NOT NULL,
-    fecha_entrega DATE NOT NULL,
+    fecha_entrega DATE DEFAULT NULL,
     estado VARCHAR(15) NOT NULL,
     comentarios TEXT,
     codigo_cliente INTEGER NOT NULL,
@@ -1149,12 +1147,122 @@ ON p.codigo_producto = dp.codigo_producto
 WHERE p.codigo_producto NOT IN
     (SELECT codigo_producto FROM detalle_pedido);--9.Devuelve un listado de los productos que nunca han aparecido en un pedido. El resultado debe mostrar el nombre, la descripción y la imagen del producto.
 
-;--10.Devuelve las oficinas donde no trabajan ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama Frutales.
+SELECT e.nombre,e.puesto, e.codigo_oficina, o.ciudad FROM empleado e
+LEFT JOIN oficina o
+ON e.codigo_oficina = o.codigo_oficina
+WHERE e.puesto LIKE 'Representante%'
+ORDER BY o.ciudad;--10.Devuelve las oficinas donde no trabajan ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama Frutales.
+
+
+SELECT c.nombre_cliente FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente
+LEFT JOIN pago pa
+ON c.codigo_cliente = pa.codigo_cliente
+WHERE c.codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pedido);--11.Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS empleado FROM empleado e
+LEFT JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE e.codigo_empleado NOT IN
+    (SELECT codigo_empleado_rep_ventas FROM cliente);--12.Devuelve un listado con los datos de los empleados que no tienen clientes asociados y el nombre de su jefe asociado.
+
+
+--1.4.7 Consultas resumen
+
+SELECT count(codigo_empleado) AS cantEmpleados FROM empleado;--1.¿Cuántos empleados hay en la compañía?
+
+SELECT pais, COUNT(codigo_cliente) AS cantClientes FROM cliente
+GROUP BY pais
+ORDER BY pais ASC;--2.¿Cuántos clientes tiene cada país?
+
+SELECT YEAR(fecha_pago) AS año, forma_pago FROM pago
+WHERE YEAR(fecha_pago) = 2009
+GROUP BY año;--3.¿Cuál fue el pago medio en 2009?
+
+SELECT estado, COUNT(codigo_pedido) AS cantPedido FROM pedido
+GROUP BY estado
+ORDER BY cantPedido DESC;--4.¿Cuántos pedidos hay en cada estado? Ordena el resultado de forma descendente por el número de pedidos.
+
+SELECT MAX(precio_venta) AS prodCaro, MIN(precio_venta) AS prodBarato FROM producto;--5.Calcula el precio de venta del producto más caro y más barato en una misma consulta.
+
+SELECT COUNT(codigo_cliente) AS cantClientes FROM cliente;--6.Calcula el número de clientes que tiene la empresa.
+
+SELECT ciudad, COUNT(codigo_cliente) AS cantCliente FROM cliente
+WHERE ciudad LIKE 'Madrid%';--7.¿Cuántos clientes existen con domicilio en la ciudad de Madrid?
+
+SELECT ciudad, COUNT(codigo_cliente) AS cantClientes FROM cliente
+WHERE ciudad LIKE 'M%'
+GROUP BY ciudad;--8.Calcula cuántos clientes tiene cada una de las ciudades que empiezan por M?
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS empleado,e.puesto, COUNT(c.codigo_cliente) AS cantClientes
+FROM empleado e
+LEFT JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE e.puesto LIKE 'Representante%'
+GROUP BY e.codigo_empleado;--9.Devuelve el nombre de los representantes de ventas y el número de clientes al que atiende cada uno.
+
+SELECT COUNT(c.codigo_cliente) as cantClientes FROM cliente c
+LEFT JOIN empleado e
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+WHERE c.codigo_empleado_rep_ventas NOT IN
+    (SELECT codigo_empleado FROM empleado );--10.Calcula el número de clientes que no tiene asignado representante de ventas.
+
+SELECT CONCAT(c.nombre_contacto,'-',c.apellido_contacto) AS nombreCliente,
+MIN(p.fecha_pago) AS fechaAntigua, MAX(p.fecha_pago) AS fechaReciente FROM cliente c
+LEFT JOIN pago p
+ON c.codigo_cliente = p.codigo_cliente
+GROUP BY c.codigo_cliente;--11.Calcula la fecha del primer y último pago realizado por cada uno de los clientes. El listado deberá mostrar el nombre y los apellidos de cada cliente.
+
+
+SELECT DISTINCT(COUNT(codigo_producto)) AS productos_diferentes, codigo_producto FROM detalle_pedido
+GROUP BY codigo_producto;--.12.Calcula el número de productos diferentes que hay en cada uno de los pedidos.
+
+SELECT DISTINCT(SUM(codigo_producto)) AS productos_diferentes FROM detalle_pedido;--13.Calcula la suma de la cantidad total de todos los productos que aparecen en cada uno de los pedidos.
+
+SELECT DISTINCT(COUNT(codigo_producto)) AS productos_diferentes, codigo_producto FROM detalle_pedido
+GROUP BY codigo_producto
+ORDER BY productos_diferentes DESC
+LIMIT 20;--14.Devuelve un listado de los 20 productos más vendidos y el número total de unidades que se han vendido de cada uno. El listado deberá estar ordenado por el número total de unidades vendidas
+
+SELECT  SUM(CONCAT(p.precio_venta*dp.cantidad)) AS base_imponible,
+        SUM(CONCAT(((p.precio_venta*dp.cantidad)*21)/100)) AS IVA,
+        SUM(CONCAT((p.precio_venta*dp.cantidad) + (((p.precio_venta*dp.cantidad)*21)/100))) AS total_facturado FROM detalle_pedido dp
+LEFT JOIN producto p
+ON dp.codigo_producto = p.codigo_producto;--15.La facturación que ha tenido la empresa en toda la historia, indicando la base imponible, el IVA y el total facturado. La base imponible se calcula sumando el coste del producto por el número de unidades vendidas de la tabla detalle_pedido. El IVA es el 21 % de la base imponible, y el total la suma de los dos campos anteriores.
+
+
+SELECT dp.codigo_producto,CONCAT(p.precio_venta*dp.cantidad) AS base_imponible,
+        CONCAT(((p.precio_venta*dp.cantidad)*21)/100) AS IVA,
+        CONCAT((p.precio_venta*dp.cantidad) + (((p.precio_venta*dp.cantidad)*21)/100)) AS total_facturado FROM detalle_pedido dp
+LEFT JOIN producto p
+ON dp.codigo_producto = p.codigo_producto
+GROUP BY dp.codigo_producto
+ORDER BY dp.codigo_producto;--16.La misma información que en la pregunta anterior, pero agrupada por código de producto.
+
+SELECT dp.codigo_producto,CONCAT(p.precio_venta*dp.cantidad) AS base_imponible,
+        CONCAT(((p.precio_venta*dp.cantidad)*21)/100) AS IVA,
+        CONCAT((p.precio_venta*dp.cantidad) + (((p.precio_venta*dp.cantidad)*21)/100)) AS total_facturado FROM detalle_pedido dp
+LEFT JOIN producto p
+ON dp.codigo_producto = p.codigo_producto
+GROUP BY dp.codigo_producto
+HAVING dp.codigo_producto LIKE 'OR%';--17.La misma información que en la pregunta anterior, pero agrupada por código de producto filtrada por los códigos que empiecen por OR.
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+USE Gardening;
 SHOW TABLES;
-SELECT * FROM gama_producto;
+SELECT * FROM producto;
 SELECT * FROM detalle_pedido;
