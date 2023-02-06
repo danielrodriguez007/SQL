@@ -1249,12 +1249,103 @@ ON dp.codigo_producto = p.codigo_producto
 GROUP BY dp.codigo_producto
 HAVING dp.codigo_producto LIKE 'OR%';--17.La misma información que en la pregunta anterior, pero agrupada por código de producto filtrada por los códigos que empiecen por OR.
 
+SELECT dp.codigo_producto, dp.cantidad,
+        CONCAT(p.precio_venta*dp.cantidad) AS base_imponible,
+        CONCAT(((p.precio_venta*dp.cantidad)*21)/100) AS IVA,
+        CONCAT((p.precio_venta*dp.cantidad) + (((p.precio_venta*dp.cantidad)*21)/100)) AS total_facturado FROM detalle_pedido dp
+LEFT JOIN producto p
+ON dp.codigo_producto = p.codigo_producto
+HAVING base_imponible >= 3000;--18.Lista las ventas totales de los productos que hayan facturado más de 3000 euros. Se mostrará el nombre, unidades vendidas, total facturado y total facturado con impuestos (21% IVA).
+
+SELECT YEAR(fecha_pago), SUM(total) AS total FROM pago
+GROUP BY YEAR(fecha_pago);--19.Muestre la suma total de todos los pagos que se realizaron para cada uno de los años que aparecen en la tabla pagos.
+
+--1.4.8 Subconsultas
+
+--1.4.8.1 Con operadores básicos de comparación
+
+SELECT nombre_cliente FROM cliente
+WHERE limite_credito = (SELECT MAX(limite_credito) FROM cliente);--1.Devuelve el nombre del cliente con mayor límite de crédito.
+
+SELECT nombre FROM producto
+WHERE precio_venta = (SELECT MAX(precio_venta) FROM producto);--2.Devuelve el nombre del producto que tenga el precio de venta más caro.
+
+SELECT p.nombre, SUM(cantidad) AS cantidad FROM producto p
+LEFT JOIN detalle_pedido dp 
+ON p.codigo_producto = dp.codigo_producto
+GROUP BY p.nombre
+ORDER BY cantidad DESC
+LIMIT 1;--3.Devuelve el nombre del producto del que se han vendido más unidades. (Tenga en cuenta que tendrá que calcular cuál es el número total de unidades que se han vendido de cada producto a partir de los datos de la tabla detalle_pedido)
+
+SELECT c.nombre_cliente, c.limite_credito, p.total FROM cliente c,pago p
+WHERE p.total = (SELECT MAX(pa.total) FROM pago pa WHERE c.limite_credito > pa.total) ;--4.Los clientes cuyo límite de crédito sea mayor que los pagos que haya realizado. (Sin utilizar INNER JOIN).
+
+SELECT nombre, cantidad_en_stock FROM producto
+WHERE cantidad_en_stock = ANY
+    (SELECT MAX(cantidad_en_stock) FROM producto);--5.Devuelve el producto que más unidades tiene en stock.
+
+SELECT nombre, cantidad_en_stock FROM producto
+WHERE cantidad_en_stock = ANY
+    (SELECT MIN(cantidad_en_stock) FROM producto);--6.Devuelve el producto que menos unidades tiene en stock.
 
 
+SELECT CONCAT(nombre,'-',apellido1,'-', apellido2) AS nombre, email, codigo_jefe FROM empleado
+WHERE codigo_jefe = ANY
+ (SELECT codigo_empleado FROM empleado
+    WHERE nombre LIKE 'Alberto%');--7.Devuelve el nombre, los apellidos y el email de los empleados que están a cargo de Alberto Soria.
+
+  --1.4.8.2 Subconsultas con ALL y ANY
+
+SELECT nombre_cliente FROM cliente
+WHERE limite_credito = ANY
+  (SELECT MAX(limite_credito) FROM cliente);--8.Devuelve el nombre del cliente con mayor límite de crédito. 
+
+SELECT nombre FROM producto
+WHERE precio_venta = ANY
+    (SELECT MAX(precio_venta) FROM producto);--9.Devuelve el nombre del producto que tenga el precio de venta más caro.
+
+SELECT nombre FROM producto
+WHERE cantidad_en_stock = ALL
+    (SELECT MIN(cantidad_en_stock) FROM producto);--10.Devuelve el producto que menos unidades tiene en stock.  
 
 
+---1.4.8.3 Subconsultas con IN y NOT IN
 
+SELECT CONCAT(nombre,'-',apellido1,'-', apellido2) AS nombre , puesto FROM empleado
+WHERE codigo_empleado NOT IN
+     (SELECT codigo_empleado_rep_ventas FROM cliente)
+     ORDER BY puesto;--11.Devuelve el nombre, apellido1 y cargo de los empleados que no representen a ningún cliente.
 
+SELECT nombre_cliente FROM cliente
+WHERE codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pago)
+    GROUP BY nombre_cliente;--12.Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.     
+
+SELECT nombre_cliente FROM cliente
+WHERE codigo_cliente IN
+    (SELECT codigo_cliente FROM pago)
+    GROUP BY nombre_cliente;;--13.Devuelve un listado que muestre solamente los clientes que sí han realizado algún pago.
+
+SELECT DISTINCT nombre FROM producto
+WHERE codigo_producto NOT IN
+    (SELECT codigo_producto FROM detalle_pedido)
+    ORDER BY nombre;--14.Devuelve un listado de los productos que nunca han aparecido en un pedido.
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',e.apellido2) AS nombre ,e.puesto,o.telefono FROM empleado e
+INNER JOIN oficina o
+ON e.codigo_oficina = o.codigo_oficina
+WHERE e.codigo_empleado NOT IN
+     (SELECT c.codigo_empleado_rep_ventas FROM cliente c)
+     GROUP BY e.nombre
+     ORDER BY e.puesto;--15.Devuelve el nombre, apellidos, puesto y teléfono de la oficina de aquellos empleados que no sean representante de ventas de ningún cliente.
+
+--16.Devuelve las oficinas donde no trabajan ninguno de los empleados que hayan sido los representantes de ventas de algún cliente que haya realizado la compra de algún producto de la gama Frutales
+SELECT nombre_cliente FROM cliente
+WHERE codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pedido)
+    AND
+    codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pago);--17.Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
 
 
 
@@ -1264,5 +1355,5 @@ HAVING dp.codigo_producto LIKE 'OR%';--17.La misma información que en la pregu
 
 USE Gardening;
 SHOW TABLES;
-SELECT * FROM producto;
-SELECT * FROM detalle_pedido;
+SELECT * FROM empleado;
+SELECT * FROM oficina;
