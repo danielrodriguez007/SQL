@@ -1348,12 +1348,77 @@ WHERE codigo_cliente NOT IN
     (SELECT codigo_cliente FROM pago);--17.Devuelve un listado con los clientes que han realizado algún pedido pero no han realizado ningún pago.
 
 
+--1.4.8.4 Subconsultas con EXISTS y NOT EXISTS
 
 
+SELECT DISTINCT nombre_cliente FROM cliente
+WHERE codigo_cliente NOT IN
+    (SELECT codigo_cliente FROM pago);--18.Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.
 
+SELECT DISTINCT nombre_cliente FROM cliente
+WHERE codigo_cliente IN
+    (SELECT codigo_cliente FROM pago);--19.Devuelve un listado que muestre solamente los clientes que sí han realizado algún pago.    
+
+SELECT DISTINCT nombre FROM producto
+WHERE codigo_producto NOT IN
+    (SELECT codigo_producto FROM detalle_pedido);--20.Devuelve un listado de los productos que nunca han aparecido en un pedido.
+
+SELECT DISTINCT nombre FROM producto
+WHERE codigo_producto IN
+    (SELECT codigo_producto FROM detalle_pedido);--21.Devuelve un listado de los productos que han aparecido en un pedido alguna vez.    
+
+
+--1.4.9 Consultas variadas
+
+SELECT c.nombre_cliente, count(p.codigo_cliente) AS cantPedidos FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente
+GROUP BY c.nombre_cliente
+ORDER BY cantPedidos DESC;--1.Devuelve el listado de clientes indicando el nombre del cliente y cuántos pedidos ha realizado. Tenga en cuenta que pueden existir clientes que no han realizado ningún pedido.
+
+SELECT c.nombre_cliente, SUM(p.total) AS total FROM cliente c
+LEFT JOIN pago p
+ON c.codigo_cliente = p.codigo_cliente
+GROUP BY c.nombre_cliente;--2.Devuelve un listado con los nombres de los clientes y el total pagado por cada uno de ellos. Tenga en cuenta que pueden existir clientes que no han realizado ningún pago.
+
+SELECT DISTINCT c.nombre_cliente,YEAR(p.fecha_pedido) AS año FROM cliente c
+LEFT JOIN pedido p
+ON c.codigo_cliente = p.codigo_cliente
+HAVING año = '2008';--3.Devuelve el nombre de los clientes que hayan hecho pedidos en 2008 ordenados alfabéticamente de menor a mayor.
+
+SELECT c.nombre_cliente, CONCAT(e.nombre,'-',e.apellido1,'-',apellido2) AS nombre,e.puesto, o.telefono  FROM cliente c
+LEFT JOIN empleado e
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+LEFT JOIN pago pg
+ON c.codigo_cliente = pg.codigo_cliente
+RIGHT JOIN oficina o
+ON e.codigo_oficina = o.codigo_oficina
+WHERE e.puesto LIKE 'Representante%' AND 
+      c.codigo_cliente NOT IN (SELECT codigo_cliente FROM pago) ;--4.Devuelve el nombre del cliente, el nombre y primer apellido de su representante de ventas y el número de teléfono de la oficina del representante de ventas, de aquellos clientes que no hayan realizado ningún pago
+
+
+SELECT c.nombre_cliente, CONCAT(e.nombre,'-',e.apellido1,'-',apellido2) AS nombre,e.puesto, o.ciudad  FROM cliente c
+LEFT JOIN empleado e
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+LEFT JOIN pago pg
+ON c.codigo_cliente = pg.codigo_cliente
+RIGHT JOIN oficina o
+ON e.codigo_oficina = o.codigo_oficina
+WHERE e.puesto LIKE 'Representante%';--5.Devuelve el listado de clientes donde aparezca el nombre del cliente, el nombre y primer apellido de su representante de ventas y la ciudad donde está su oficina
+
+SELECT CONCAT(e.nombre,'-',e.apellido1,'-',apellido2) AS nombre,e.puesto, o.telefono  FROM empleado e
+RIGHT JOIN oficina o
+ON e.codigo_oficina = o.codigo_oficina
+WHERE e.puesto NOT LIKE 'Representante%';--6.Devuelve el nombre, apellidos, puesto y teléfono de la oficina de aquellos empleados que no sean representante de ventas de ningún cliente.
+
+
+SELECT o.ciudad, COUNT(e.codigo_empleado) AS cantEmpleado FROM oficina o
+LEFT JOIN empleado e 
+ON o.codigo_oficina = e.codigo_oficina
+GROUP BY o.ciudad;--7.Devuelve un listado indicando todas las ciudades donde hay oficinas y el número de empleados que tiene.
 
 
 USE Gardening;
 SHOW TABLES;
 SELECT * FROM empleado;
-SELECT * FROM oficina;
+SELECT * FROM cliente;
