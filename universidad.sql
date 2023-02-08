@@ -259,5 +259,82 @@ INSERT INTO alumno_se_matricula_asignatura VALUES (19, 9, 5);
 INSERT INTO alumno_se_matricula_asignatura VALUES (19, 10, 5);
 
 
+--1.5.4 Consultas sobre una tabla
+
+SELECT CONCAT(apellido2,'_',apellido1,'_',nombre) AS alumno FROM persona
+WHERE tipo LIKE 'alumno%'
+ORDER BY alumno DESC;--1.Devuelve un listado con el primer apellido, segundo apellido y el nombre de todos los alumnos. El listado deberá estar ordenado alfabéticamente de menor a mayor por el primer apellido, segundo apellido y nombre.
+
+SELECT CONCAT(nombre,'_',apellido1,'_',apellido2) AS alumno FROM persona
+WHERE telefono IS NULL;--2.Averigua el nombre y los dos apellidos de los alumnos que no han dado de alta su número de teléfono en la base de datos.
+
+SELECT CONCAT(nombre,'_',apellido1,'_',apellido2), fecha_nacimiento as alumno FROM persona
+WHERE fecha_nacimiento LIKE '1999%';--3.Devuelve el listado de los alumnos que nacieron en 1999.
+
+;--4.Devuelve el listado de profesores que no han dado de alta su número de teléfono en la base de datos y además su nif termina en K.
+SELECT nombre, cuatrimestre, curso, id_grado FROM asignatura
+WHERE cuatrimestre = 1 AND
+      curso = 3 AND
+      id_grado = 7;--5.Devuelve el listado de las asignaturas que se imparten en el primer cuatrimestre, en el tercer curso del grado que tiene el identificador 7.
+
+--1.5.5 Consultas multitabla (Composición interna)
+
+SELECT CONCAT(p.nombre,'_',p.apellido1,'_',p.apellido2) AS alumno,p.sexo,g.nombre  FROM persona p
+LEFT JOIN alumno_se_matricula_asignatura a
+ON p.id = a.id_alumno
+LEFT JOIN asignatura asg
+ON a.id_asignatura = asg.id
+LEFT JOIN grado g
+ON asg.id_grado = g.id
+WHERE p.sexo LIKE 'M%'
+AND g.nombre LIKE '%Informática%';--1.Devuelve un listado con los datos de todas las alumnas que se han matriculado alguna vez en el Grado en Ingeniería Informática (Plan 2015).
+
+SELECT a.nombre, g.nombre FROM asignatura a, grado g
+WHERE g.nombre LIKE '%Informática%';--2.Devuelve un listado con todas las asignaturas ofertadas en el Grado en Ingeniería Informática (Plan 2015)
+
+SELECT CONCAT(p.nombre,'_',p.apellido1,'_',p.apellido2) AS profesor, p.tipo,d.nombre FROM persona p
+LEFT JOIN profesor pr
+ON p.id = pr.id_profesor
+LEFT JOIN departamento d
+ON pr.id_departamento = d.id
+WHERE p.tipo LIKE 'profesor%';--3.Devuelve un listado de los profesores junto con el nombre del departamento al que están vinculados. El listado debe devolver cuatro columnas, primer apellido, segundo apellido, nombre y nombre del departamento. El resultado estará ordenado alfabéticamente de menor a mayor por los apellidos y el nombre.
+
+SELECT p.nif,a.nombre,cs.anyo_inicio,cs.anyo_fin FROM persona p
+LEFT JOIN alumno_se_matricula_asignatura al
+ON p.id = al.id_alumno
+LEFT JOIN asignatura a
+ON al.id_asignatura = a.id
+LEFT JOIN curso_escolar cs
+ON al.id_curso_escolar = cs.id
+WHERE p.nif LIKE '26902806M%';--4.Devuelve un listado con el nombre de las asignaturas, año de inicio y año de fin del curso escolar del alumno con nif 26902806M.
+
+SELECT d.nombre, gr.nombre FROM departamento d
+INNER JOIN profesor p
+ON d.id = p.id_departamento
+INNER JOIN asignatura a
+ON p.id_profesor = a.id_profesor
+INNER JOIN grado gr
+ON gr.id = a.id_grado
+WHERE gr.nombre LIKE '%Informática%';--5.Devuelve un listado con el nombre de todos los departamentos que tienen profesores que imparten alguna asignatura en el Grado en Ingeniería Informática (Plan 2015).
+
+SELECT DISTINCT CONCAT(p.nombre,'_',p.apellido1,'_',p.apellido2) AS alumno, cs.anyo_inicio FROM persona p
+INNER JOIN alumno_se_matricula_asignatura al
+ON p.id = al.id_alumno
+INNER JOIN asignatura a
+ON a.id = al.id_asignatura
+INNER JOIN curso_escolar cs
+ON al.id_curso_escolar = cs.id
+WHERE cs.anyo_inicio IN ('2018', '2019');--6.Devuelve un listado con todos los alumnos que se han matriculado en alguna asignatura durante el curso escolar 2018/2019.
+
+
+
+
+
+
+
+
+
+
 use universidad;
 SHOW TABLES;
+SELECT * FROM curso_escolar;
