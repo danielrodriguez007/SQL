@@ -326,9 +326,56 @@ INNER JOIN curso_escolar cs
 ON al.id_curso_escolar = cs.id
 WHERE cs.anyo_inicio IN ('2018', '2019');--6.Devuelve un listado con todos los alumnos que se han matriculado en alguna asignatura durante el curso escolar 2018/2019.
 
+--1.5.7 Consultas resumen
 
+SELECT sexo,COUNT(sexo) FROM persona
+GROUP BY sexo;--1.Devuelve el número total de alumnas que ha
 
+SELECT COUNT(id) AS cantAlumno FROM persona
+WHERE fecha_nacimiento LIKE '1999%';--2.Calcula cuántos alumnos nacieron en 1999.
 
+SELECT d.nombre, COUNT(p.id_profesor) AS cantProfesor FROM departamento d
+INNER JOIN profesor p
+ON d.id = p.id_departamento
+GROUP BY d.nombre
+ORDER BY cantProfesor DESC;--3.Calcula cuántos profesores hay en cada departamento. El resultado sólo debe mostrar dos columnas, una con el nombre del departamento y otra con el número de profesores que hay en ese departamento. El resultado sólo debe incluir los departamentos que tienen profesores asociados y deberá estar ordenado de mayor a menor por el número de profesores.
+
+SELECT d.nombre, COUNT(p.id_profesor) AS cantProfesor FROM departamento d
+LEFT JOIN profesor p
+ON d.id = p.id_departamento
+GROUP BY d.nombre
+ORDER BY cantProfesor DESC;--4.Devuelve un listado con todos los departamentos y el número de profesores que hay en cada uno de ellos. Tenga en cuenta que pueden existir departamentos que no tienen profesores asociados. Estos departamentos también tienen que aparecer en el listado.
+ 
+SELECT g.nombre, COUNT(a.id) AS cantAsignatura FROM grado g
+LEFT JOIN asignatura a
+ON g.id = a.id_grado
+GROUP BY g.nombre
+ORDER BY cantAsignatura DESC;--5.Devuelve un listado con el nombre de todos los grados existentes en la base de datos y el número de asignaturas que tiene cada uno. Tenga en cuenta que pueden existir grados que no tienen asignaturas asociadas. Estos grados también tienen que aparecer en el listado. El resultado deberá estar ordenado de mayor a menor por el número de asignaturas.
+
+SELECT g.nombre, COUNT(a.id) AS cantAsignatura FROM grado g
+LEFT JOIN asignatura a
+ON g.id = a.id_grado
+GROUP BY g.nombre
+HAVING cantAsignatura > 40
+ORDER BY cantAsignatura DESC;--6.Devuelve un listado con el nombre de todos los grados existentes en la base de datos y el número de asignaturas que tiene cada uno, de los grados que tengan más de 40 asignaturas asociadas.
+
+SELECT g.nombre, a.nombre, SUM(a.creditos) AS credito FROM grado g
+INNER JOIN asignatura a
+ON g.id = a.id_grado
+GROUP BY a.nombre;--7.Devuelve un listado que muestre el nombre de los grados y la suma del número total de créditos que hay para cada tipo de asignatura. El resultado debe tener tres columnas: nombre del grado, tipo de asignatura y la suma de los créditos de todas las asignaturas que hay de ese tipo. Ordene el resultado de mayor a menor por el número total de crédidos.
+
+SELECT cs.anyo_inicio, COUNT(al.id_alumno) AS cantAlumno FROM curso_escolar cs
+INNER JOIN alumno_se_matricula_asignatura al
+ON cs.id = al.id_curso_escolar
+GROUP BY cs.anyo_inicio;--8.Devuelve un listado que muestre cuántos alumnos se han matriculado de alguna asignatura en cada uno de los cursos escolares. El resultado deberá mostrar dos columnas, una columna con el año de inicio del curso escolar y otra con el número de alumnos matriculados.
+
+SELECT p.id_profesor, pe.nombre, pe.apellido1, pe.apellido2,pe.tipo, COUNT(a.id) AS cantAsig FROM profesor p
+LEFT JOIN persona pe
+ON p.id_profesor = pe.id
+LEFT JOIN asignatura a
+ON p.id_profesor = a.id_profesor
+GROUP BY p.id_profesor
+ORDER BY cantAsig DESC;--9.Devuelve un listado con el número de asignaturas que imparte cada profesor. El listado debe tener en cuenta aquellos profesores que no imparten ninguna asignatura. El resultado mostrará cinco columnas: id, nombre, primer apellido, segundo apellido y número de asignaturas. El resultado estará ordenado de mayor a menor por el número de asignaturas
 
 
 
@@ -337,4 +384,4 @@ WHERE cs.anyo_inicio IN ('2018', '2019');--6.Devuelve un listado con todos los a
 
 use universidad;
 SHOW TABLES;
-SELECT * FROM curso_escolar;
+SELECT * FROM alumno_se_matricula_asignatura;
