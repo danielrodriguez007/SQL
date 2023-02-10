@@ -378,10 +378,43 @@ GROUP BY p.id_profesor
 ORDER BY cantAsig DESC;--9.Devuelve un listado con el número de asignaturas que imparte cada profesor. El listado debe tener en cuenta aquellos profesores que no imparten ninguna asignatura. El resultado mostrará cinco columnas: id, nombre, primer apellido, segundo apellido y número de asignaturas. El resultado estará ordenado de mayor a menor por el número de asignaturas
 
 
+--1.5.8 Subconsultas
+
+SELECT * FROM persona
+WHERE fecha_nacimiento = ALL
+   (SELECT MIN(fecha_nacimiento) FROM persona WHERE tipo LIKE 'alumno%' );--1.Devuelve todos los datos del alumno más joven.
+
+SELECT * FROM profesor
+WHERE id_profesor NOT IN
+     (SELECT id FROM departamento) ;--2.Devuelve un listado con los profesores que no están asociados a un departamento.   
+
+SELECT * FROM departamento
+WHERE id NOT IN 
+    (SELECT id_profesor FROM profesor);--3.Devuelve un listado con los departamentos que no tienen profesores asociados
+
+SELECT DISTINCT p.* FROM profesor p
+LEFT JOIN departamento d
+ON p.id_profesor = d.id
+INNER JOIN asignatura a
+ON p.id_profesor = a.id_profesor
+WHERE a.id_profesor IS NULL AND
+      p.id_profesor IN (d.id) ;--4.Devuelve un listado con los profesores que tienen un departamento asociado y que no imparten ninguna asignatura.
+
+SELECT a.* FROM asignatura a
+LEFT JOIN profesor p
+ON a.id_profesor = p.id_profesor
+WHERE a.id_profesor NOT IN (p.id_profesor);--5.Devuelve un listado con las asignaturas que no tienen un profesor asignad
+
+SELECT d.* FROM departamento d
+LEFT JOIN profesor p 
+ON d.id = p.id_profesor
+LEFT JOIN asignatura a
+ON p.id_profesor = a.id_profesor;--6.Devuelve un listado con todos los departamentos que no han impartido asignaturas en ningún curso escolar.
+
 
 
 
 
 use universidad;
 SHOW TABLES;
-SELECT * FROM alumno_se_matricula_asignatura;
+SELECT * FROM asignatura;
