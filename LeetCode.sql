@@ -27,3 +27,27 @@ insert into Orders (id, customerId) values ('2', '1');
 
 select distinct (name) AS Customers from Customers
 where id NOT IN  (SELECT customerId FROM Orders) ;
+
+Create table If Not Exists Person (Id int, Email varchar(255));
+Truncate table Person;
+insert into Person (id, email) values ('1', 'john@example.com');
+insert into Person (id, email) values ('2', 'bob@example.com');
+insert into Person (id, email) values ('3', 'john@example.com');
+
+
+delete from Person
+WHERE (select email from Person
+group by email
+having count(email) >= 2)
+
+
+Create table If Not Exists Weather (id int, recordDate date, temperature int);
+Truncate table Weather;
+insert into Weather (id, recordDate, temperature) values ('1', '2015-01-01', '10');
+insert into Weather (id, recordDate, temperature) values ('2', '2015-01-02', '25');
+insert into Weather (id, recordDate, temperature) values ('3', '2015-01-03', '20');
+insert into Weather (id, recordDate, temperature) values ('4', '2015-01-04', '30');
+
+
+select w.id from weather w , weather ww
+where w.temperature > ww.temperature and datediff(w.recordDate, ww.recordDate)=1;
