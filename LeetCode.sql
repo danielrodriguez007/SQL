@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS Leet;
 CREATE DATABASE Leet CHARACTER SET utf8mb4;
-USE leet;
+
 
 Create table If Not Exists Person (id int, email varchar(255));
 Truncate table Person;
@@ -51,3 +51,23 @@ insert into Weather (id, recordDate, temperature) values ('4', '2015-01-04', '30
 
 select w.id from weather w , weather ww
 where w.temperature > ww.temperature and datediff(w.recordDate, ww.recordDate)=1;
+
+
+
+Create table If Not Exists ActorDirector (actor_id int, director_id int, timestamp int);
+Truncate table ActorDirector;
+insert into ActorDirector (actor_id, director_id, timestamp) values ('1', '1', '0');
+insert into ActorDirector (actor_id, director_id, timestamp) values ('1', '1', '1');
+insert into ActorDirector (actor_id, director_id, timestamp) values ('1', '1', '2');
+insert into ActorDirector (actor_id, director_id, timestamp) values ('1', '2', '3');
+insert into ActorDirector (actor_id, director_id, timestamp) values ('1', '2', '4');
+insert into ActorDirector (actor_id, director_id, timestamp) values ('2', '1', '5');
+insert into ActorDirector (actor_id, director_id, timestamp) values ('2', '1', '6');
+
+SELECT actor_id, director_id FROM ActorDirector
+GROUP BY actor_id, director_id
+HAVING COUNT(timestamp) >= 3;
+
+
+
+USE leet;
