@@ -278,3 +278,30 @@ WHERE NOT EXISTS (SELECT id_cliente FROM pedido WHERE cliente.id = pedido.id_cli
 
 SELECT * FROM comercial
 WHERE NOT EXISTS(SELECT id_comercial from pedido WHERE comercial.id = pedido.id_comercial);--12.Devuelve un listado de los comerciales que no han realizado ningún pedido. (Utilizando EXISTS o NOT EXISTS).
+
+
+SELECT IF(GROUPING((fecha)),'All Dates',fecha) fecha, 
+       IF(GROUPING(id_cliente),'Total', id_cliente) as Id_cliente,
+       SUM(total) Total 
+FROM pedido 
+GROUP BY  fecha, id_cliente WITH ROLLUP;        
+
+
+SELECT * FROM cliente;
+
+SELECT id FROM
+    (SELECT id, nombre, apellido1, apellido2 FROM cliente
+    WHERE categoria >= 200) Temp
+WHERE id%2 = 1;    
+
+SELECT customerGroup, COUNT(customerGroup) Qclients
+FROM
+    (select id_cliente,sum(total) as Total,
+    (CASE
+        WHEN sum(Total) > '1983' THEN 'Gold'
+        WHEN SUM(total) <= '1982' THEN 'Silver'
+    END) customerGroup
+    FROM pedido
+    GROUP BY id_cliente
+    ORDER BY customerGroup) clustering
+GROUP BY customerGroup;
