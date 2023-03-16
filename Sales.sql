@@ -305,3 +305,43 @@ FROM
     GROUP BY id_cliente
     ORDER BY customerGroup) clustering
 GROUP BY customerGroup;
+
+use ventas;
+      
+
+select * from cliente;
+
+WITH salesrep AS (
+    SELECT
+     id,
+     CONCAT(nombre, ' ', apellido1) AS NameRep
+    FROM
+     comercial
+)
+SELECT * FROM pedido
+JOIN
+    salesrep ON pedido.id_comercial = salesrep.id;
+
+
+
+WITH salesrep AS (
+    SELECT
+     id,
+     CONCAT(nombre, ' ', apellido1) AS NameRep
+    FROM
+     comercial
+),
+customerrep AS (
+    SELECT
+     id,
+     CONCAT(nombre, ' ', apellido1) AS Namecus
+    FROM
+     cliente
+)
+SELECT pedido.id,pedido.id_cliente,customerrep.Namecus, pedido.id_comercial, salesrep.NameRep  FROM pedido
+JOIN
+    salesrep ON pedido.id_comercial = salesrep.id
+JOIN
+    customerrep ON pedido.id_cliente = customerrep.id
+    ORDER BY id;    
+
