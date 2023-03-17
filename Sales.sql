@@ -279,6 +279,7 @@ WHERE NOT EXISTS (SELECT id_cliente FROM pedido WHERE cliente.id = pedido.id_cli
 SELECT * FROM comercial
 WHERE NOT EXISTS(SELECT id_comercial from pedido WHERE comercial.id = pedido.id_comercial);--12.Devuelve un listado de los comerciales que no han realizado ningún pedido. (Utilizando EXISTS o NOT EXISTS).
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 SELECT IF(GROUPING((fecha)),'All Dates',fecha) fecha, 
        IF(GROUPING(id_cliente),'Total', id_cliente) as Id_cliente,
@@ -286,8 +287,6 @@ SELECT IF(GROUPING((fecha)),'All Dates',fecha) fecha,
 FROM pedido 
 GROUP BY  fecha, id_cliente WITH ROLLUP;        
 
-
-SELECT * FROM cliente;
 
 SELECT id FROM
     (SELECT id, nombre, apellido1, apellido2 FROM cliente
@@ -306,10 +305,7 @@ FROM
     ORDER BY customerGroup) clustering
 GROUP BY customerGroup;
 
-use ventas;
-      
 
-select * from cliente;
 
 WITH salesrep AS (
     SELECT
@@ -345,3 +341,19 @@ JOIN
     customerrep ON pedido.id_cliente = customerrep.id
     ORDER BY id;    
 
+
+
+SELECT 
+    CONCAT(nombre, ' ', apellido1, ' ', apellido2) as Names, 
+    'CLIENTE' as Segmentacion
+FROM
+    cliente
+UNION SELECT
+    CONCAT(nombre, ' ', apellido1, ' ', apellido2),
+    'VENDEDOR' as Segmentacion
+FROM
+    comercial;
+
+
+use ventas;
+SELECT * FROM cliente;
