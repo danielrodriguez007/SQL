@@ -355,5 +355,25 @@ FROM
     comercial;
 
 
+
+DELIMITER $$
+CREATE PROCEDURE clientes()
+    SELECT * FROM cliente;
+END $$
+DELIMITER;
+ 
+
+DELIMITER \\
+CREATE PROCEDURE ciudad(
+    IN cityname VARCHAR(255)
+)
+BEGIN
+    SELECT * FROM cliente
+    WHERE ciudad = cityname;
+END \\
+DELIMITER;
+
+CALL ciudad();
+    
+
 use ventas;
-SELECT * FROM cliente;
