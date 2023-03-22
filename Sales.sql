@@ -341,7 +341,7 @@ JOIN
     customerrep ON pedido.id_cliente = customerrep.id
     ORDER BY id;    
 
-
+-----------------------------------------------------------------------------------------------------------------------------------------------
 
 SELECT 
     CONCAT(nombre, ' ', apellido1, ' ', apellido2) as Names, 
@@ -354,15 +354,13 @@ UNION SELECT
 FROM
     comercial;
 
-
-
 DELIMITER $$
 CREATE PROCEDURE clientes()
     SELECT * FROM cliente;
 END $$
 DELIMITER;
  
-
+-----------------------------------------------------------------------------------------------------------------------------------------------
 DELIMITER \\
 CREATE PROCEDURE ciudad(
     IN cityname VARCHAR(255)
@@ -372,8 +370,65 @@ BEGIN
     WHERE ciudad = cityname;
 END \\
 DELIMITER;
-
 CALL ciudad();
-    
+-----------------------------------------------------------------------------------------------------------------------------------------------
 
+DELIMITER $$
+CREATE PROCEDURE clasesCliente(
+    IN pId INT,
+    OUT pclaseCliente VARCHAR(200))
+BEGIN
+
+    DECLARE cat INT(100) DEFAULT 0;
+
+    SELECT categoria
+    INTO cat
+    FROM cliente
+    WHERE Id =pId;
+
+    IF  cat > 300  THEN
+        SET pclaseCliente = 'Clase Maxima';
+    ELSEIF cat = 200 AND cat < 300 THEN
+        SET pclaseCliente = 'Clse Intermedia';
+    ELSE
+        SET pclaseCliente = 'Clase Regular'    
+    END IF;    
+END$$    
+DELIMITER;
+
+CALL clasesCliente(2,@level);
+SELECT @level;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+DELIMITER $$
+CREATE PROCEDURE clasesCliente1(
+    IN pId INT,
+    OUT pclaseCliente VARCHAR(200))
+BEGIN
+
+    DECLARE cat INT(100) DEFAULT 0;
+
+    SELECT categoria
+    INTO cat
+    FROM cliente
+    WHERE Id =pId;
+
+    IF  cat > 300  THEN
+        SET pclaseCliente = 'Clase Maxima';
+    ELSEIF cat = 200 AND cat < 300 THEN
+        SET pclaseCliente = 'Clse Intermedia';
+    ELSE
+        SET pclaseCliente = 'Clase Regular';    
+    END IF;    
+END$$    
+DELIMITER;
+
+CALL clasesCliente1(3,@level);
+SELECT @level;
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+SELECT *FROM cliente;
 use ventas;
