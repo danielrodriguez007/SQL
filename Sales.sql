@@ -428,7 +428,34 @@ DELIMITER;
 CALL clasesCliente1(3,@level);
 SELECT @level;
 -----------------------------------------------------------------------------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS comType;
 
+DELIMITER $$
+CREATE PROCEDURE comType(
+    IN pid INT,
+    OUT comType VARCHAR(20))
+BEGIN
+    DECLARE comission FLOAT DEFAULT 0;
 
-SELECT *FROM cliente;
+    SELECT comision 
+    into comission 
+    FROM comercial
+    WHERE id = pid;
+
+    IF  comission > 0.11  THEN
+        SET comType = 'Max Comission';
+    ELSEIF comission > 0.09 AND comission < 0.12 THEN
+        SET comType = 'Intermedian Comission';
+    ELSE
+        SET comType = 'Regular Comission';    
+    END IF; 
+END$$
+DELIMITER;
+
+CALL comType(8,@comission);
+SELECT @comission;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+SELECT *FROM comercial;
 use ventas;
