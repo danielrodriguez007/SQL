@@ -353,6 +353,7 @@ UNION SELECT
     'VENDEDOR' as Segmentacion
 FROM
     comercial;
+-----------------------------------------------------------------------------------------------------------------------------------------------
 
 DELIMITER $$
 CREATE PROCEDURE clientes()

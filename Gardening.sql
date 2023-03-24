@@ -1418,7 +1418,84 @@ ON o.codigo_oficina = e.codigo_oficina
 GROUP BY o.ciudad;--7.Devuelve un listado indicando todas las ciudades donde hay oficinas y el número de empleados que tiene.
 
 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 USE Gardening;
 SHOW TABLES;
-SELECT * FROM empleado;
+SELECT * FROM oficina;
 SELECT * FROM cliente;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+WITH rep AS(
+    SELECT
+    codigo_empleado,
+    CONCAT(nombre,' ', apellido1) AS nombreRep 
+    FROM empleado
+)
+SELECT nombreRep,nombre_cliente, ciudad, pais FROM cliente
+JOIN
+    rep ON cliente.codigo_empleado_rep_ventas = rep.codigo_empleado;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DELIMITER $$
+CREATE PROCEDURE vendedor()
+BEGIN
+    WITH rep AS(
+        SELECT
+    codigo_empleado,
+    CONCAT(nombre,' ', apellido1) AS nombreRep,
+    codigo_oficina 
+    FROM empleado
+),
+localidad AS(
+    SELECT
+    CONCAT(ciudad,'-',region,'-',pais) AS localidad,
+    codigo_oficina
+    FROM 
+    oficina
+)
+SELECT nombreRep,localidad,nombre_cliente FROM cliente
+JOIN
+    rep ON cliente.codigo_empleado_rep_ventas = rep.codigo_empleado
+JOIN
+    localidad ON rep.codigo_oficina = localidad.codigo_oficina;
+END$$ 
+DELIMITER ;
+CALL vendedor();
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+USE Gardening;
+SHOW TABLES;
+SELECT * FROM detalle_pedido;
+SELECT * FROM producto;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DELIMITER $$
+CREATE PROCEDURE inventario(
+    IN id VARCHAR(10),
+    OUT war VARCHAR(200)
+)
+BEGIN
+    DECLARE wid INT(100) DEFAULT 0;
+
+    SELECT
+    cantidad_en_stock
+    INTO wid
+    FROM producto
+    WHERE id = codigo_producto;
+
+    IF wid < 99 THEN
+        SET war = 'Menos de 100 Unidades en Stock';
+    ELSEIF wid >99 AND wid < 300 THEN
+        SET war = 'Entre 100 y 300 Unidades en Stock';
+    ELSE
+        SET war = 'Mas de 300 unidades en Stock';
+    END IF;            
+END$$ 
+DELIMITER;
+
+CALL inventario('FR-39',@stock);
+SELECT @stock;
