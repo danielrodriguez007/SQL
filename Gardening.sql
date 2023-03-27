@@ -1444,18 +1444,18 @@ CREATE PROCEDURE vendedor()
 BEGIN
     WITH rep AS(
         SELECT
-    codigo_empleado,
-    CONCAT(nombre,' ', apellido1) AS nombreRep,
-    codigo_oficina 
-    FROM empleado
-),
-localidad AS(
-    SELECT
-    CONCAT(ciudad,'-',region,'-',pais) AS localidad,
-    codigo_oficina
-    FROM 
-    oficina
-)
+        codigo_empleado,
+        CONCAT(nombre,' ', apellido1) AS nombreRep,
+        codigo_oficina 
+        FROM empleado
+    ),
+    localidad AS(
+        SELECT
+        CONCAT(ciudad,'-',region,'-',pais) AS localidad,
+        codigo_oficina
+        FROM 
+        oficina
+    )
 SELECT nombreRep,localidad,nombre_cliente FROM cliente
 JOIN
     rep ON cliente.codigo_empleado_rep_ventas = rep.codigo_empleado
@@ -1465,12 +1465,6 @@ END$$
 DELIMITER ;
 CALL vendedor();
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-USE Gardening;
-SHOW TABLES;
-SELECT * FROM detalle_pedido;
-SELECT * FROM producto;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DELIMITER $$
@@ -1499,3 +1493,55 @@ DELIMITER;
 
 CALL inventario('FR-39',@stock);
 SELECT @stock;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE PROCEDURE delivered()
+BEGIN
+    SELECT
+        fecha_pedido,fecha_entrega,
+        DATEDIFF(fecha_entrega,fecha_pedido) AS dias,
+        CASE 
+            WHEN DATEDIFF(fecha_entrega,fecha_pedido) >=0 and DATEDIFF(fecha_entrega,fecha_pedido) <=10 THEN 'Between 0 and 10 days'
+            WHEN DATEDIFF(fecha_entrega,fecha_pedido) >10 and DATEDIFF(fecha_entrega,fecha_pedido) <=30 THEN 'Between 10 and 30 days' 
+            WHEN DATEDIFF(fecha_entrega,fecha_pedido) >30  THEN '30 days or more'
+            ELSE 'Something´s wrong' 
+        END AS daysOfDelivered,
+        estado FROM pedido
+        WHERE estado LIKE 'Entregado'
+        ORDER BY codigo_pedido;
+END$$
+DELIMITER;
+
+CALL delivered();
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DELIMITER $$
+CREATE PROCEDURE statusAccounts()
+BEGIN
+    SELECT
+        c.nombre_cliente,   
+        (dp.cantidad * dp.precio_unidad) AS totalPedido,
+        pa.total AS pagoTotal,
+            CASE 
+                WHEN ((pa.total-dp.cantidad * dp.precio_unidad)) > 0 THEN 'Possitive Numbers'  
+                ELSE  'Negative Numbers'
+            END AS StatusOfAccount
+    FROM detalle_pedido dp
+        INNER JOIN pedido p
+            ON dp.codigo_pedido = p.codigo_pedido
+        INNER JOIN pago pa
+            ON pa.codigo_cliente = p.codigo_cliente
+        INNER JOIN cliente c
+            ON c.codigo_cliente=p.codigo_cliente
+    GROUP BY c.nombre_cliente;
+END$$
+DELIMITER;
+
+CALL statusAccounts;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+USE Gardening;
+SHOW TABLES;
+SELECT * FROM producto;
+SELECT * FROM pedido;
+
