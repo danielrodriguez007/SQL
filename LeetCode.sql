@@ -65,9 +65,21 @@ insert into ActorDirector (actor_id, director_id, timestamp) values ('2', '1', '
 insert into ActorDirector (actor_id, director_id, timestamp) values ('2', '1', '6');
 
 SELECT actor_id, director_id FROM ActorDirector
-GROUP BY actor_id, director_id
+GROUP BY actor_id, director_id 
 HAVING COUNT(timestamp) >= 3;
+------------------------------------------------------------------------------------------------------------------------------
 
+DELIMITER $$
+CREATE PROCEDURE testTab()
+BEGIN
+    DECLARE TableNotFound CONDITION for 1146;
 
+    DECLARE EXIT HANDLER FOR TableNotFound 
+        SELECT 'please create table first ' Message;
+        SELECT * FROM abc;
+END$$
+DELIMITER;
 
-USE leet;
+CALL testTab();
+------------------------------------------------------------------------------------------------------------------------------
+USE Leet;
