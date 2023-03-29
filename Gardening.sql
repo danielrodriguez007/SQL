@@ -1538,10 +1538,18 @@ DELIMITER;
 
 CALL statusAccounts;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE VIEW test AS
+    SELECT
+        cantidad_en_stock,
+        CONCAT(cantidad_en_stock * precio_venta) AS esperado,
+        CONCAT(precio_venta-precio_proveedor) AS ganancia
+    FROM producto
+    ORDER BY cantidad_en_stock DESC;
 
+SELECT * FROM test;    
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 USE Gardening;
-SHOW TABLES;
+SHOW FULL TABLES;
 SELECT * FROM producto;
 SELECT * FROM pedido;
 
