@@ -1548,8 +1548,23 @@ CREATE VIEW test AS
 
 SELECT * FROM test;    
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE VIEW detalleCliente(
+    nombre,
+    telefono,
+    direccion
+) AS
+SELECT 
+    nombre_cliente,
+    telefono,
+    linea_direccion1
+FROM cliente;
+
+SELECT * FROM detalleCliente
+WHERE nombre LIKE 'C%';
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 USE Gardening;
 SHOW FULL TABLES;
 SELECT * FROM producto;
-SELECT * FROM pedido;
+SELECT * FROM cliente;
 
