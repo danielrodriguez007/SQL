@@ -456,7 +456,26 @@ DELIMITER;
 CALL comType(8,@comission);
 SELECT @comission;
 
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+DROP IF EXISTS WorkCenters;
+
+CREATE TABLE WorkCenters(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    capacity INT NOT NULL
+);
+
+DROP TABLE IF EXISTS WorkCenterStats;
+
+CREATE TABLE WorkCentersStats(
+    totalCapacity INT NOT NULL
+);
+
+
+
+
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
-SELECT *FROM comercial;
+SELECT * FROM cliente;
 use ventas;
