@@ -71,8 +71,46 @@ VALUES
     ('Jane Doe', 'jane.doe@example.com','2000-01-01');
 
 ---------------------------------------------------------------------------------------------------------------------------------
+#MySQL BEFORE DELETE TRIGGER EXAMPLE
 
-SELECT * FROM reminders;
+DROP TABLE IF EXISTS Salaries;
+CREATE TABLE Salaries(
+    employeeNumber INT PRIMARY KEY,
+    validFrom DATE NOT NULL,
+    amout DEC (12,2) NOT NULL DEFAULT 0
+);
+
+DROP TABLE IF EXISTS SalaryArchives;
+CREATE TABLE SalaryArchives(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    employeeNumber INT ,
+    validFrom DATE NOT NULL,
+    amout DEC (12,2) NOT NULL DEFAULT 0,
+    deletedAt TIMESTAMP DEFAULT NOW()
+);
+
+INSERT INTO Salaries(employeeNumber,validFrom,amout)
+VALUES
+    (1002,'2000-01-01',50000),
+    (1056,'2000-01-01',60000),
+    (1076,'2000-01-01',70000);
+
+DELIMITER $$
+
+CREATE TRIGGER before_salaries_delete
+BEFORE DELETE
+ON Salaries FOR EACH ROW
+BEGIN
+    INSERT INTO SalaryArchives(employeeNumber,validFrom,amout)
+    VALUES(OLD.employeeNumber,OLD.validFrom,OLD.amout);
+END$$
+DELIMITER;   
+
+DELETE FROM salaries
+WHERE employeeNumber = 1002;
+---------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM SalaryArchives;
 SHOW tables;
 SHOW PROCEDURE STATUS;
 USE mysqltutorialorg;
