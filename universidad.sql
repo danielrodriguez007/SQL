@@ -412,9 +412,29 @@ LEFT JOIN asignatura a
 ON p.id_profesor = a.id_profesor;--6.Devuelve un listado con todos los departamentos que no han impartido asignaturas en ningún curso escolar.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE VIEW personal
+AS
+    SELECT CONCAT(nombre,' ',apellido1,' ',apellido2) as nombre,
+       sexo, tipo
+    FROM persona
+    ORDER BY tipo;
 
+SELECT tipo, sexo, COUNT(sexo) AS cantSexo  FROM personal
+GROUP BY tipo, sexo
+ORDER BY tipo;
 
+UPDATE personal
+SET
+    tipo = 'profesor'
+WHERE
+    nombre LIKE 'Zoe%';    
+
+SELECT tipo, sexo, COUNT(sexo) AS cantSexo  FROM personal
+GROUP BY tipo, sexo
+ORDER BY tipo;    
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 use universidad;
 SHOW TABLES;
-SELECT * FROM asignatura;
+SELECT * FROM personal;

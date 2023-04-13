@@ -91,9 +91,9 @@ CREATE TABLE SalaryArchives(
 
 INSERT INTO Salaries(employeeNumber,validFrom,amout)
 VALUES
-    (1002,'2000-01-01',50000),
-    (1056,'2000-01-01',60000),
-    (1076,'2000-01-01',70000);
+    (1004,'2000-01-01',50000),
+    (1058,'2000-01-01',60000),
+    (1078,'2000-01-01',70000);
 
 DELIMITER $$
 
@@ -121,6 +121,31 @@ where a.email = b.email and a.id > b.id;
 
 SELECT * FROM Person;
 ---------------------------------------------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS items;
+CREATE TABLE items(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(11,2) NOT NULL
+);
+
+INSERT INTO items (name, price)
+VALUES ('Laptop',700.56),('Desktop',699.99),('iPad',700.50);
+
+CREATE VIEW luxuryItems AS
+
+    SELECT
+        * 
+    FROM
+        items
+    WHERE
+        price > 700;
+
+SELECT * FROM items;
+
+DELETE FROM luxuryItems
+WHERE id = 3;
+
+---------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -129,7 +154,6 @@ SELECT * FROM Person;
 
 
 
-SELECT * FROM SalaryArchives;
-SHOW tables;
+SHOW FULL TABLES;
 SHOW PROCESSLIST;
 USE mysqltutorialorg;
