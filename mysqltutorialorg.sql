@@ -1,157 +1,81 @@
 CREATE DATABASE mysqltutorialorg  CHARACTER SET utf8mb4;
-DROP IF EXISTS WorkCenters;
-CREATE TABLE WorkCenters(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    capacity INT NOT NULL
+CREATE DATABASE;
+--------------------------------------------------------------------------------------------------------------------------------
+# https://www.mysqltutorial.org/wp-content/uploads/2017/06/mysql-adjacency-list.png --->image of the Tree;
+DROP TABLE IF EXISTS category ;
+
+CREATE TABLE category(
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    parent_id INT(10) UNSIGNED DEFAULT NULL,
+    PRIMARY KEY(id),
+    Foreign Key (parent_id) REFERENCES category (id)
+     on delete CASCADE on update CASCADE
 );
 
-DROP TABLE IF EXISTS WorkCenterStats;
-CREATE TABLE WorkCenterStats(
-    totalCapacity INT NOT NULL
-);
+INSERT INTO category(title,parent_id) 
+VALUES('Electronics',NULL);
+INSERT INTO category(title,parent_id) 
+VALUES('Laptops & PC',1);
 
-DROP TABLE IF EXISTS members;
-CREATE TABLE members(
-    id INT AUTO_INCREMENT NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(255),
-    birthDate DATE,
-    PRIMARY KEY (id)
-);
+INSERT INTO category(title,parent_id) 
+VALUES('Laptops',2);
+INSERT INTO category(title,parent_id) 
+VALUES('PC',2);
 
-DROP TABLE IF EXISTS reminders;
-CREATE TABLE reminders(
-    id INT AUTO_INCREMENT,
-    memberId INT,
-    message VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id, memberId)
-);
+INSERT INTO category(title,parent_id) 
+VALUES('Cameras & photo',1);
+INSERT INTO category(title,parent_id) 
+VALUES('Camera',5);
 
----------------------------------------------------------------------------------------------------------------------------------
-DELIMITER $$
-CREATE TRIGGER before_workcenters_insert
-BEFORE INSERT
-ON WorkCenters FOR EACH ROW
-BEGIN
-    DECLARE rowcount INT;
+INSERT INTO category(title,parent_id) 
+VALUES('Phones & Accessories',1);
+INSERT INTO category(title,parent_id) 
+VALUES('Smartphones',7);
 
-    SELECT COUNT(*)
-    INTO rowcount
-    FROM WorkCenterStats;
+INSERT INTO category(title,parent_id) 
+VALUES('Android',8);
+INSERT INTO category(title,parent_id) 
+VALUES('iOS',8);
+INSERT INTO category(title,parent_id) 
+VALUES('Other Smartphones',8);
+INSERT INTO category(title,parent_id) 
+VALUES('Batteries',7);
+INSERT INTO category(title,parent_id) 
+VALUES('Headsets',7);
+INSERT INTO category(title,parent_id) 
+VALUES('Screen Protectors',7);
 
-    IF rowcount > 0 THEN
-        UPDATE WorkCenterStats
-        SET totalCapacity = totalCapacity + new.capacity;
-    ELSE
-        INSERT INTO WorkCenterStats(totalCapacity)
-        VALUES(new.capacity);
-    END IF;
-END$$
-DELIMITER;
+SELECT * FROM category
+ORDER BY parent_id;
+SELECT
+    id,title
+FROM
+    category
+WHERE
+    parent_id = 1;
 
-INSERT INTO WorkCenters(name, capacity)
-VALUES('Packing', 300);
----------------------------------------------------------------------------------------------------------------------------------
-DELIMITER $$
-CREATE TRIGGER after_members_insert
-AFTER INSERT
-ON members FOR EACH ROW
-BEGIN
-    IF NEW.birthDate IS NULL THEN
-        INSERT INTO reminders(memberId,message)
-        VALUES(new.id,CONCAT('Hi ',NEW.name,',Please update your date of birth'));
-    END IF;
-END$$
-DELIMITER;
+SELECT c1.title FROM category c1
+LEFT JOIN category c2
+ON c2.parent_id = c1.id
+WHERE c2.id IS NULL;
 
-INSERT INTO members(name,email,birthDate)
-VALUES
-    ('John Doe', 'john.doe@example.com', NULL),
-    ('Jane Doe', 'jane.doe@example.com','2000-01-01');
-
----------------------------------------------------------------------------------------------------------------------------------
-#MySQL BEFORE DELETE TRIGGER EXAMPLE
-
-DROP TABLE IF EXISTS Salaries;
-CREATE TABLE Salaries(
-    employeeNumber INT PRIMARY KEY,
-    validFrom DATE NOT NULL,
-    amout DEC (12,2) NOT NULL DEFAULT 0
-);
-
-DROP TABLE IF EXISTS SalaryArchives;
-CREATE TABLE SalaryArchives(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    employeeNumber INT ,
-    validFrom DATE NOT NULL,
-    amout DEC (12,2) NOT NULL DEFAULT 0,
-    deletedAt TIMESTAMP DEFAULT NOW()
-);
-
-INSERT INTO Salaries(employeeNumber,validFrom,amout)
-VALUES
-    (1004,'2000-01-01',50000),
-    (1058,'2000-01-01',60000),
-    (1078,'2000-01-01',70000);
-
-DELIMITER $$
-
-CREATE TRIGGER before_salaries_delete
-BEFORE DELETE
-ON Salaries FOR EACH ROW
-BEGIN
-    INSERT INTO SalaryArchives(employeeNumber,validFrom,amout)
-    VALUES(OLD.employeeNumber,OLD.validFrom,OLD.amout);
-END$$
-DELIMITER;   
-
-DELETE FROM salaries
-WHERE employeeNumber = 1002;
----------------------------------------------------------------------------------------------------------------------------------
-Create table If Not Exists Person (Id int, Email varchar(255));
-Truncate table Person;
-insert into Person (id, email) values ('1', 'john@example.com');
-insert into Person (id, email) values ('2', 'bob@example.com');
-insert into Person (id, email) values ('3', 'john@example.com');
-
-delete a.* from Person a, Person b
-where a.email = b.email and a.id > b.id;
-
-
-SELECT * FROM Person;
----------------------------------------------------------------------------------------------------------------------------------
-DROP TABLE IF EXISTS items;
-CREATE TABLE items(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    price DECIMAL(11,2) NOT NULL
-);
-
-INSERT INTO items (name, price)
-VALUES ('Laptop',700.56),('Desktop',699.99),('iPad',700.50);
-
-CREATE VIEW luxuryItems AS
-
-    SELECT
-        * 
-    FROM
-        items
-    WHERE
-        price > 700;
-
-SELECT * FROM items;
-
-DELETE FROM luxuryItems
-WHERE id = 3;
-
----------------------------------------------------------------------------------------------------------------------------------
+WITH RECURSIVE category_path (id, title, path) AS
+(
+  SELECT id, title, title as path
+    FROM category
+    WHERE parent_id IS NULL
+  UNION ALL
+  SELECT c.id, c.title, CONCAT(cp.path, ' > ', c.title)
+    FROM category_path AS cp JOIN category AS c
+      ON cp.id = c.parent_id
+)
+SELECT * FROM category_path
+ORDER BY path;
 
 
 
-
-
-
+--------------------------------------------------------------------------------------------------------------------------------
 
 
 SHOW FULL TABLES;

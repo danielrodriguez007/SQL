@@ -1563,6 +1563,13 @@ SELECT * FROM detalleCliente
 WHERE nombre LIKE 'C%';
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ALTER TABLE producto ADD FULLTEXT(descripcion);
+
+SELECT nombre, descripcion FROM producto
+WHERE
+    MATCH(descripcion)
+    AGAINST('Árbol');
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 USE Gardening;
 SHOW FULL TABLES;
 SELECT * FROM producto;
