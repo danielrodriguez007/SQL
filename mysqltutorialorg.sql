@@ -76,8 +76,44 @@ ORDER BY path;
 
 
 --------------------------------------------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS contacts;
+CREATE TABLE contacts(
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  email VARCHAR(255) NOT NULL
+);
+
+INSERT INTO contacts (first_name, last_name, email)
+VALUES ('Carine ','Schmitt','carine.schmitt@verizon.net'),
+       ('Jean','King','jean.king@me.com'),
+       ('Peter','Ferguson','peter.ferguson@google.com'),
+       ('Janine ','Labrune','janine.labrune@aol.com'),
+       ('Jonas ','Bergulfsen','jonas.bergulfsen@mac.com'),
+       ('Janine ','Labrune','janine.labrune@aol.com'),
+       ('Susan','Nelson','susan.nelson@comcast.net'),
+       ('Zbyszek ','Piestrzeniewicz','zbyszek.piestrzeniewicz@att.net'),
+       ('Roland','Keitel','roland.keitel@yahoo.com'),
+       ('Julie','Murphy','julie.murphy@yahoo.com'),
+       ('Kwai','Lee','kwai.lee@google.com'),
+       ('Jean','King','jean.king@me.com'),
+       ('Susan','Nelson','susan.nelson@comcast.net'),
+       ('Roland','Keitel','roland.keitel@yahoo.com');
+
+SELECT email, count(email) as countEmail FROM contacts
+GROUP BY email
+HAVING countEmail > 1;
+
+DELETE c1 FROM contacts c1
+INNER JOIN contacts c2
+WHERE c1.id > c2.id AND c1.email = c2.email;
+
+SELECT @id:= LAST_INSERT_ID();
+
+--------------------------------------------------------------------------------------------------------------------------------
 
 
 SHOW FULL TABLES;
 SHOW PROCESSLIST;
+SELECT * FROM contacts;
 USE mysqltutorialorg;
