@@ -110,10 +110,28 @@ WHERE c1.id > c2.id AND c1.email = c2.email;
 
 SELECT @id:= LAST_INSERT_ID();
 
+SELECT * FROM contacts
+WHERE first_name REGEXP '^J';
+
+--------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM products;
+
+WITH inventory
+AS (
+  SELECT
+    productName, productLine, quantityInStock,
+    ROW_NUMBER() OVER (
+      PARTITION BY productLine
+      ORDER BY quantityInStock DESC) rowCount
+  FROM products  
+)
+SELECT * FROM inventory
+WHERE rowCount <= 10; 
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 
 SHOW FULL TABLES;
 SHOW PROCESSLIST;
-SELECT * FROM contacts;
+SELECT * FROM employees;
 USE mysqltutorialorg;

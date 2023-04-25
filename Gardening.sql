@@ -1570,8 +1570,34 @@ WHERE
     MATCH(descripcion)
     AGAINST('Árbol');
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WITH salesmen
+AS (
+    SELECT nombre_cliente, telefono,codigo_empleado_rep_ventas,
+    ROW_NUMBER() OVER(PARTITION BY codigo_empleado_rep_ventas) salesmen
+    FROM cliente
+)
+SELECT s.*, CONCAT(e.nombre,' ',e.apellido1,' ',e.apellido2) as salesman FROM salesmen s
+INNER JOIN empleado e
+ON s.codigo_empleado_rep_ventas = e.codigo_empleado
+WHERE salesmen > 4;
+;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WITH orders
+AS(
+    SELECT codigo_cliente,ROW_NUMBER() OVER(PARTITION BY codigo_cliente) ordersClient
+    FROM pedido
+)
+SELECT DISTINCT c.nombre_cliente,CONCAT(e.nombre,' ',e.apellido1,' ',e.apellido2) as salesman FROM cliente c
+INNER JOIN orders o
+ON  c.codigo_cliente = o.codigo_cliente
+INNER JOIN empleado e
+ON c.codigo_empleado_rep_ventas = e.codigo_empleado
+WHERE ordersClient >=5
+;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 USE Gardening;
 SHOW FULL TABLES;
-SELECT * FROM producto;
+SELECT * FROM empleado;
 SELECT * FROM cliente;
 
