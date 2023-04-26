@@ -1595,9 +1595,30 @@ ON c.codigo_empleado_rep_ventas = e.codigo_empleado
 WHERE ordersClient >=5
 ;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM cliente
+ORDER BY RAND()
+LIMIT 10;
+
+SELECT codigo_producto,nombre,proveedor,precio_venta
+FROM producto a
+WHERE
+ 1 = (SELECT COUNT(codigo_producto)
+        FROM
+            producto b
+        WHERE
+            b.precio_venta > a.precio_venta);
+
+SELECT fecha_pedido, DATEDIFF(fecha_pedido,'2007-01-01') as diffDays FROM pedido
+WHERE '2007-01-01' BETWEEN DATE_SUB(fecha_pedido, INTERVAL 359 DAY) AND fecha_pedido
+;     
+
+SELECT codigo_pedido,IFNULL(fecha_entrega, 'Sin Entregar') FROM pedido;
+
+SELECT DATE(NOW()) as Today, CURDATE() + INTERVAL 1 DAY as Tomorrow ;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 USE Gardening;
 SHOW FULL TABLES;
-SELECT * FROM empleado;
-SELECT * FROM cliente;
+DESCRIBE pedido;
+SELECT * FROM producto;
 
