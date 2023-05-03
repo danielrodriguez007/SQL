@@ -1635,9 +1635,26 @@ WHERE cantidad_en_stock =
     (SELECT MAX(cantidad_en_stock) FROM producto)
     AND nombre LIKE 'C%';
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WITH cantPedidos AS (
+    SELECT c.nombre_cliente as nombre, COUNT(p.codigo_pedido) as cantPedido FROM cliente c
+    INNER JOIN pedido p
+    ON c.codigo_cliente = p.codigo_cliente
+    GROUP BY c.nombre_cliente
+)
+SELECT nombre, cantPedido,
+CASE cantPedido
+    WHEN 5 THEN 'Cliente Normal'
+    WHEN 10 THEN 'Cliente Frecuente'
+    ELSE 'Cliente Leal'
+
+    END tipoCliente
+FROM cantPedidos
+ORDER BY nombre    
+;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 USE Gardening;
 SHOW FULL TABLES;
 DESCRIBE pedido;
-SELECT * FROM producto;
+SELECT * FROM pedido;
 
