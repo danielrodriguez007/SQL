@@ -1616,6 +1616,25 @@ SELECT codigo_pedido,IFNULL(fecha_entrega, 'Sin Entregar') FROM pedido;
 
 SELECT DATE(NOW()) as Today, CURDATE() + INTERVAL 1 DAY as Tomorrow ;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT CONCAT(e.nombre,' ',e.apellido1,' ',e.apellido2) as salesman, e.puesto,
+       GROUP_CONCAT(DISTINCT c.nombre_cliente) customers 
+FROM empleado e
+INNER JOIN cliente c
+ON e.codigo_empleado = c.codigo_empleado_rep_ventas
+GROUP BY salesman;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT
+    COUNT(IF(estado = 'Entregado',1,NULL)) AS Entregado,
+    COUNT(IF(estado = 'Rechazado',1,NULL)) AS Rechazado,
+    COUNT(IF(estado = 'Pendiente',1,NULL)) AS Pendiente,
+    COUNT(estado) AS totalPedidos
+FROM pedido;    
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM producto
+WHERE cantidad_en_stock = 
+    (SELECT MAX(cantidad_en_stock) FROM producto)
+    AND nombre LIKE 'C%';
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 USE Gardening;
 SHOW FULL TABLES;
