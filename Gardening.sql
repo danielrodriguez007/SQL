@@ -1628,7 +1628,17 @@ SELECT
     COUNT(IF(estado = 'Rechazado',1,NULL)) AS Rechazado,
     COUNT(IF(estado = 'Pendiente',1,NULL)) AS Pendiente,
     COUNT(estado) AS totalPedidos
-FROM pedido;    
+FROM pedido; 
+
+SELECT
+    SUM(IF(estado = 'Entregado',1,0)) AS entregado,
+    SUM(IF(estado = 'Rechazado',1,0)) AS rechazado,
+    SUM(IF(estado = 'Pendiente',1,0)) AS pendiente,
+    COUNT(estado) AS totalPedidos
+FROM pedido;
+
+SELECT estado, COUNT(estado) as estados FROM pedido
+GROUP BY estado;
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SELECT * FROM producto
 WHERE cantidad_en_stock = 
@@ -1646,15 +1656,44 @@ CASE cantPedido
     WHEN 5 THEN 'Cliente Normal'
     WHEN 10 THEN 'Cliente Frecuente'
     ELSE 'Cliente Leal'
-
     END tipoCliente
 FROM cantPedidos
-ORDER BY nombre    
+ORDER BY cantPedido    
 ;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WITH gamaProducts AS (
+    SELECT
+        gama, COUNT(gama) as cantGama, SUM(cantidad_en_stock) as totalStock,
+        SUM(precio_venta) as precioVenta , SUM(precio_proveedor) as precioProveedor,
+        GROUP_CONCAT(nombre) AS products,
+        CASE 
+            WHEN  SUM(cantidad_en_stock) BETWEEN 50 AND 100 THEN 'Entre 50 y 100 U.'
+            WHEN  SUM(cantidad_en_stock) BETWEEN 0 AND 49 THEN 'Entre 0 y 49 U'
+            ELSE 'Mayor a 100'
+        END
+    FROM producto
+    GROUP BY gama
+    ORDER BY cantGama DESC
+)
+SELECT gama, (cantGama*precioVenta) as totalBruto,
+      (cantGama*precioProveedor) AS totalNeto, 
+      ((cantGama*precioVenta)-(cantGama*precioProveedor)) AS Total
+FROM gamaProducts;
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WITH rankings AS(
+    SELECT nombre, gama, precio_venta, DENSE_RANK() OVER(PARTITION BY gama ORDER BY precio_venta) as ranking
+    FROM producto
+    ORDER BY gama,precio_venta
+)
+SELECT nombre, gama, ranking FROM rankings
+WHERE ranking IN (SELECT MIN(ranking) FROM rankings)
+GROUP BY gama
+; 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 USE Gardening;
 SHOW FULL TABLES;
-DESCRIBE pedido;
-SELECT * FROM pedido;
+DESCRIBE rankings;
+SELECT * FROM producto;
 
