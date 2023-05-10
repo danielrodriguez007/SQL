@@ -1691,9 +1691,20 @@ WHERE ranking IN (SELECT MIN(ranking) FROM rankings)
 GROUP BY gama
 ; 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT fecha_pedido, fecha_entrega,
+ IFNULL(DATEDIFF(fecha_entrega,fecha_pedido),'No entregado') DiasDiferencia FROM pedido
+ ORDER BY fecha_entrega;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT 
+    DATE_FORMAT(fecha_pedido, '%Y-%m-%d') orderDate,
+    DATE_FORMAT(fecha_pedido, '%a %D %b %Y') requireddate,
+    DATE_FORMAT(fecha_pedido, '%W %D %M %Y') shippedDate
+FROM pedido
+;
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 USE Gardening;
 SHOW FULL TABLES;
 DESCRIBE rankings;
-SELECT * FROM producto;
+SELECT * FROM pedido;
 
