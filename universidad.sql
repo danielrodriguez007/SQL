@@ -434,7 +434,25 @@ SELECT tipo, sexo, COUNT(sexo) AS cantSexo  FROM personal
 GROUP BY tipo, sexo
 ORDER BY tipo;    
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+WITH personas AS(
+    SELECT CONCAT(nombre,' ', apellido1,' ', apellido2) AS name, sexo, tipo, TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) age,
+    CASE 
+        WHEN TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) >=20 AND TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) < 30 THEN 'Entre 20 y 29'
+        WHEN TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) >=30 AND TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) < 40 THEN 'Entre 30 y 39'
+        WHEN TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) >=40 AND TIMESTAMPDIFF(YEAR, fecha_nacimiento, NOW()) < 50 THEN 'Entre 40 y 49'  
+        ELSE
+        'Mayor a 50 '    
+    END ages
+    FROM persona
+    ORDER BY ages 
+)
+SELECT name, tipo, DENSE_RANK() OVER(PARTITION BY tipo ORDER BY age ) AS ranking , age FROM personas
+WHERE tipo LIKE 'alumno'
+ORDER BY ranking 
+limit 1,1
+;
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 use universidad;
 SHOW FULL TABLES;
-SELECT * FROM personal;
+SELECT * FROM persona;
