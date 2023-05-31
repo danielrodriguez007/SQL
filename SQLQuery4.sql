@@ -345,6 +345,26 @@ INSERT INTO #TEMP_ALUMNOSCREDITOS
 SELECT DISTINCT NOMBRE, TOTAL_CREDITOS, OBSERVACION FROM #TEMP_ALUMNOSCREDITOS
 ORDER BY TOTAL_CREDITOS
 *********************************************************************************************************************************************************************************************************************
+SELECT
+PR.ID_PROFESOR,
+CONCAT(P.NOMBRE,' ',P.APELLIDO1,' ',P.APELLIDO2) AS PROFESOR,
+STUFF(
+	(SELECT A.NOMBRE + ' '
+	 FROM ASIGNATURA
+	 WHERE NOMBRE = A.NOMBRE
+	 FOR XML PATH (''))
+	 ,1,0,'') AS ASIGNATURA,
+P.SEXO
+FROM PERSONA P
+JOIN PROFESOR PR
+ON
+P.ID = PR.ID_PROFESOR
+JOIN ASIGNATURA A
+ON
+PR.ID_DEPARTAMENTO = A.ID
+WHERE P.TIPO LIKE 'PROFESOR'
+;
+*********************************************************************************************************************************************************************************************************************
 USE UNIVERSITY;
 SELECT * FROM INFORMATION_SCHEMA.TABLES;
 SELECT * FROM ASIGNATURA;
