@@ -235,10 +235,23 @@ ON
 A.REPORTSTO = B.EMPLOYEEID
 WHERE A.SALARIES > B.SALARIES
 
+--PIVOT
+
+SELECT 'EXISTENCE' AS EXISTENCE,[1],[2],[3]
+FROM(
+	SELECT PRODUCTID,UNITSINSTOCK
+	FROM PRODUCTS
+) AS T
+PIVOT(
+	SUM(UNITSINSTOCK)
+	FROM PRODUCTID IN([1],[2],[3])
+)AS P
+
+
 ******************************************************************************************************************************************************************************************
 
 USE NORTHWIND
 SELECT * FROM INFORMATION_SCHEMA.TABLES;
-SELECT * FROM [EMPLOYEES];
+SELECT * FROM [PRODUCTS];
 SELECT * FROM FN_VIRTUALSERVERNODES()
---PAGE 115
+--PAGE 150
