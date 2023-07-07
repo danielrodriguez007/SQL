@@ -237,21 +237,59 @@ WHERE A.SALARIES > B.SALARIES
 
 --PIVOT
 
-SELECT 'EXISTENCE' AS EXISTENCE,[1],[2],[3]
-FROM(
-	SELECT PRODUCTID,UNITSINSTOCK
-	FROM PRODUCTS
-) AS T
-PIVOT(
-	SUM(UNITSINSTOCK)
-	FROM PRODUCTID IN([1],[2],[3])
-)AS P
+SELECT [1],[2],[3]
+	FROM(
+		SELECT PRODUCTID,UNITSINSTOCK
+		FROM PRODUCTS
+	) AS T
+	PIVOT(
+		COUNT(UNITSINSTOCK)
+		FROM PRODUCTID IN([1],[2],[3])
+	)AS P
+
+CREATE TABLE PIVOT_STOCK(
+	ITEM VARCHAR(10),
+	WEEKDAY NVARCHAR(10),
+	PRICE INT
+)
+
+INSERT INTO PIVOT_STOCK VALUES
+('Item1', 'Mon', 110), ('Item2', 'Mon', 230), ('Item3', 'Mon', 150),
+('Item1', 'Tue', 115), ('Item2', 'Tue', 231), ('Item3', 'Tue', 162),
+('Item1', 'Wed', 110), ('Item2', 'Wed', 240), ('Item3', 'Wed', 162),
+('Item1', 'Thu', 109), ('Item2', 'Thu', 228), ('Item3', 'Thu', 145),
+('Item1', 'Fri', 120), ('Item2', 'Fri', 210), ('Item3', 'Fri', 125),
+('Item1', 'Mon', 122), ('Item2', 'Mon', 225), ('Item3', 'Mon', 140),
+('Item1', 'Tue', 110), ('Item2', 'Tue', 235), ('Item3', 'Tue', 154),
+('Item1', 'Wed', 125), ('Item2', 'Wed', 220), ('Item3', 'Wed', 142);
+SELECT * FROM PIVOT_STOCK
+SELECT * FROM PIVOT_STOCK
+PIVOT (
+	COUNT(PRICE) FOR WEEKDAY IN ([Mon], [Tue], [Wed], [Thu], [Fri])
+)PVT
+
+-- STORED PROCEDURES
+CREATE PROCEDURE GETNAME(
+	@INPUT_ID INT= NULL,
+	@FIRSTNAME VARCHAR(128) = NULL
+)
+AS
+BEGIN
+	SELECT 
+	FIRSTNAME+' '+LASTNAME AS [NAME],
+	TITLE
+	FROM EMPLOYEES
+	WHERE EMPLOYEEID = @INPUT_ID OR FIRSTNAME = @FIRSTNAME
+END
+GO
+
+GETNAME @FIRSTNAME ='Laura';
 
 
 ******************************************************************************************************************************************************************************************
 
 USE NORTHWIND
 SELECT * FROM INFORMATION_SCHEMA.TABLES;
-SELECT * FROM [PRODUCTS];
+SELECT * FROM [CATEGORIES];
 SELECT * FROM FN_VIRTUALSERVERNODES()
---PAGE 150
+--PAGE 190
