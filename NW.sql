@@ -285,7 +285,38 @@ GO
 
 GETNAME @FIRSTNAME ='Laura';
 
+-- show advanced options
+EXEC sp_configure 'show advanced options', 1
+GO
+RECONFIGURE
+GO
 
+-- enable Database Mail XPs
+EXEC sp_configure 'Database Mail XPs', 1
+GO
+RECONFIGURE
+GO
+
+-- check if it has been changed
+EXEC sp_configure 'Database Mail XPs'
+GO
+
+-- hide advanced options
+EXEC sp_configure 'show advanced options', 0
+GO
+RECONFIGURE
+GO
+
+-- SEND EMAIL
+
+EXEC msdb.dbo.sp_send_dbmail
+ @profile_name = 'The Profile Name',
+ @recipients = 'ddidierrodriguezr@gmail.com',
+ @query = 'SELECT * FROM PIVOT_STOCK',
+ @subject = 'STOCK',
+ @attach_query_result_as_file = 1;
+
+SELECT * FROM msdb.dbo.sysmail_profile;
 ******************************************************************************************************************************************************************************************
 
 USE NORTHWIND
