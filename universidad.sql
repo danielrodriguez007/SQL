@@ -241,22 +241,7 @@ INSERT INTO alumno_se_matricula_asignatura VALUES (23, 1, 5);
 INSERT INTO alumno_se_matricula_asignatura VALUES (23, 2, 5);
 INSERT INTO alumno_se_matricula_asignatura VALUES (23, 3, 5);
 INSERT INTO alumno_se_matricula_asignatura VALUES (23, 4, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (23, 5, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (23, 6, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (23, 7, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (23, 8, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (23, 9, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (23, 10, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 1, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 2, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 3, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 4, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 5, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 6, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 7, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 8, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 9, 5);
-INSERT INTO alumno_se_matricula_asignatura VALUES (19, 10, 5);
+
 
 
 --1.5.4 Consultas sobre una tabla
@@ -451,6 +436,9 @@ WHERE tipo LIKE 'alumno'
 ORDER BY ranking 
 limit 1,1
 ;
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT nombre FROM persona 
+WHERE INSTR(ciudad,'Almería');
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 use universidad;

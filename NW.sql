@@ -261,7 +261,8 @@ INSERT INTO PIVOT_STOCK VALUES
 ('Item1', 'Fri', 120), ('Item2', 'Fri', 210), ('Item3', 'Fri', 125),
 ('Item1', 'Mon', 122), ('Item2', 'Mon', 225), ('Item3', 'Mon', 140),
 ('Item1', 'Tue', 110), ('Item2', 'Tue', 235), ('Item3', 'Tue', 154),
-('Item1', 'Wed', 125), ('Item2', 'Wed', 220), ('Item3', 'Wed', 142);
+('Item1', 'Wed', 125), ('Item2', 'Wed', 220), ('Item3', 'Wed', 142);
+
 SELECT * FROM PIVOT_STOCK
 SELECT * FROM PIVOT_STOCK
 PIVOT (
@@ -316,11 +317,11 @@ EXEC msdb.dbo.sp_send_dbmail
  @subject = 'STOCK',
  @attach_query_result_as_file = 1;
 
-SELECT * FROM msdb.dbo.sysmail_profile;
-******************************************************************************************************************************************************************************************
+
+*****************************************************************************************************************************************************************************************
 
 USE NORTHWIND
 SELECT * FROM INFORMATION_SCHEMA.TABLES;
 SELECT * FROM [CATEGORIES];
 SELECT * FROM FN_VIRTUALSERVERNODES()
---PAGE 190
+--PAGE 258
