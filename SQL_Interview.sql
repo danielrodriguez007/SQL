@@ -74,6 +74,93 @@ SELECT * FROM BANKTRANSACTIONS
 WHERE TRANSACTIONTYPE LIKE 'Deposit'
 ;
 
+CREATE TABLE SALES(
+  CUSTOMERID INT,
+  PRODUCTID CHAR(1),
+  PURCHASEDATE DATE,
+  QUANTITY INT,
+  REVENUE DECIMAL(10,2)
+);
+
+INSERT INTO SALES 
+VALUES
+    (1, 'A', '2023-01-01', 5, 100),
+    (2, 'B', '2023-01-02', 3, 50),
+    (3, 'A', '2023-01-03', 2, 30),
+    (4, 'C', '2023-01-03', 1, 20),
+    (1, 'B', '2023-01-04', 4, 80);
+
+CREATE TABLE Names (
+  Name VARCHAR(100)
+);
+
+INSERT INTO Names (Name)
+VALUES ('rAVI kUMAR'), ('priya sharma'), ('amit PATEL'), ('NEHA gupta'); 
+
+CREATE TABLE USER(
+  USER_ID INT,
+  NAME VARCHAR(50),
+  EMAIL VARCHAR(100)
+);
+
+CREATE TABLE ACTIVITYLOG(
+  LOG_ID INT,
+  USER_ID INT,
+  ACTIVITY_TYPE VARCHAR(50),
+  TIMESTAMP DATETIME
+);
+
+INSERT INTO User (user_id, name, email)
+VALUES
+  (1, 'Rahul', 'rahul@example.com'),
+  (2, 'Priya', 'priya@example.com'),
+  (3, 'Amit', 'amit@example.com'),
+  (4, 'Sneha', 'sneha@example.com'),
+  (5, 'Gaurav', 'gaurav@example.com'),
+  (6, 'Anika', 'anika@example.com');
+
+INSERT INTO ActivityLog (log_id, user_id, activity_type, timestamp)
+VALUES
+  (1, 1, 'login', '2023-06-10 09:00:00'),
+  (2, 1, 'search', '2023-06-10 09:15:00'),
+  (3, 2, 'login', '2023-06-10 10:00:00'),
+  (4, 3, 'login', '2023-06-11 11:00:00'),
+  (5, 1, 'purchase', '2023-06-12 14:30:00'),
+  (6, 2, 'search', '2023-06-15 16:45:00'),
+  (7, 1, 'logout', '2023-06-18 20:00:00'),
+  (8, 1, 'login', '2023-01-15 10:30:00'),
+  (9, 2, 'search', '2023-02-05 14:45:00'),
+  (10, 3, 'purchase', '2023-03-20 09:15:00'),
+  (11, 1, 'search', '2023-04-10 16:30:00'),
+  (12, 2, 'login', '2023-05-05 11:45:00'),
+  (13, 3, 'search', '2023-06-15 08:30:00');
+
+ CREATE TABLE PRODUCTS(
+  PRODUCTID INT PRIMARY KEY,
+  PRODUCTNAME VARCHAR(50),
+  PRICE DECIMAL(10,2)
+ );
+
+ CREATE TABLE ORDERS(
+  ORDERID INT PRIMARY KEY,
+  PRODUCTID INT,
+  QUANTITY INT,
+  SALES DECIMAL(10.2)
+ );
+
+ INSERT INTO Products (productID, productName, price) VALUES
+  (1, 'Apple', 2.5),
+  (2, 'Banana', 1.5),
+  (3, 'Orange', 3.0),
+  (4, 'Mango', 2.0);
+
+ INSERT INTO Orders (orderID, productID, quantity, sales) VALUES
+  (1, 1, 10, 25.0),
+  (2, 1, 5, 12.5),
+  (3, 2, 8, 12.0),
+  (4, 3, 12, 36.0),
+  (5, 4, 6, 12.0); 
+---------------------------------------------------------------------------------------------------------------------------------------
 SELECT * FROM TEMP_DEPOSIT;
 
 SELECT
@@ -109,9 +196,61 @@ RIGHT JOIN TRIPS B
 ON 
 A.REQUEST_AT = B.REQUEST_AT
 GROUP BY B.REQUEST_AT;
+---------------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM SALES;
+
+#CALCULATE TOTAL REVENUE
+SELECT SUM(REVENUE) TOTAL_REVENUE FROM SALES;
+
+#CALCULATE TOTAL SALES BY PRODUCT
+SELECT
+PRODUCTID,
+SUM(QUANTITY) TOTALQUANTITY,
+SUM(REVENUE) TOTAL_REVENUE
+FROM SALES
+GROUP BY PRODUCTID;
+
+#FIND TOP CUSTOMERS BY REVENUE
+SELECT
+CUSTOMERID,
+SUM(REVENUE) TOTAL_REVENUE
+FROM SALES
+GROUP BY CUSTOMERID;
+---------------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM NAMES;
+
+SELECT LOWER(NAME) FROM NAMES;
+SELECT UPPER(NAME) FROM NAMES;
+---------------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM USER;
+SELECT * FROM ACTIVITYLOG;
 
 
+SELECT
+A.*,
+B.ACTIVITY_TYPE, 
+B.TIMESTAMP
+FROM USER A
+INNER JOIN ACTIVITYLOG B 
+ON 
+A.USER_ID=B.USER_ID
+WHERE B.TIMESTAMP >= DATE_SUB(CURRENT_DATE(),INTERVAL 30 DAY)
+ORDER BY USER_ID;
 
+---------------------------------------------------------------------------------------------------------------------------------------
+SELECT * FROM ORDERS;
+
+SELECT * FROM PRODUCTS;
+
+SELECT 
+A.PRODUCTNAME,
+SUM(A.PRICE*B.QUANTITY) TOTALREVENUE
+FROM PRODUCTS A
+INNER JOIN ORDERS B
+ON
+A.PRODUCTID = B.PRODUCTID
+GROUP BY A.PRODUCTNAME
+ORDER BY TOTALREVENUE DESC;
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 USE interview;
