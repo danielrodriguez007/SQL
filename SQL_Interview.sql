@@ -160,6 +160,72 @@ VALUES
   (3, 2, 8, 12.0),
   (4, 3, 12, 36.0),
   (5, 4, 6, 12.0); 
+
+  CREATE TABLE ADS(
+    ADID INT PRIMARY KEY,
+    VIEWS INT,
+    CLICKS INT,
+    COST DECIMAL(10,2)
+  );
+
+  INSERT INTO Ads (adId, views, clicks, cost) VALUES
+  (1, 1000, 50, 20.5),
+  (2, 800, 30, 15.2),
+  (3, 1200, 80, 25.7),
+  (4, 600, 20, 10.9),
+  (5, 1500, 120, 40.3);
+
+  CREATE TABLE EMAILS(
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255),
+    EMAIL VARCHAR(255),
+    PHONE VARCHAR(255)
+  );
+
+INSERT INTO EMAILS
+VALUES
+(1, 'Rahul', 'rahul@example.com', '9876543210'),
+(2, 'Rohit', 'rohit@example.com', '8765432109'),
+(3, 'Suresh', 'rahul@example.com', '7654321098'),
+(4, 'Manish', 'manish@example.com', '6543210987'),
+(5, 'Amit', 'amit@example.com', '5432109876'),
+(6, 'Rahul', 'rahul@example.com', '4321098765'); 
+
+CREATE TABLE EMPLOYEES(
+  ID INT PRIMARY KEY,
+  NAME VARCHAR(255),
+  SALARY INT,
+  MANAGERID INT
+);
+
+INSERT INTO Employees (id, name, salary, managerId) VALUES
+  (1, 'Rahul', 5000, 3),
+  (2, 'Rohit', 8000, 4),
+  (3, 'Suresh', 6000, NULL),
+  (4, 'Manish', 9000, 3);
+
+CREATE TABLE CUSTOMERS(
+  ID INT PRIMARY KEY, 
+  NAME VARCHAR(255)
+); 
+CREATE TABLE ORDERSS(
+  ID INT PRIMARY KEY,
+  CUSTOMERID INT,
+  Foreign Key (CUSTOMERID) REFERENCES CUSTOMERS(ID)
+);
+
+INSERT INTO Customers (id, name) VALUES
+  (1, 'Joe'),
+  (2, 'Henry'),
+  (3, 'Sam'),
+  (4, 'Max');
+
+INSERT INTO ORDERSS (id, customerId) VALUES
+  (1, 3),
+  (2, 1);
+
+---------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------
 SELECT * FROM TEMP_DEPOSIT;
 
@@ -224,8 +290,6 @@ SELECT UPPER(NAME) FROM NAMES;
 ---------------------------------------------------------------------------------------------------------------------------------------
 SELECT * FROM USER;
 SELECT * FROM ACTIVITYLOG;
-
-
 SELECT
 A.*,
 B.ACTIVITY_TYPE, 
@@ -253,7 +317,39 @@ GROUP BY A.PRODUCTNAME
 ORDER BY TOTALREVENUE DESC;
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+SELECT
+ADID,CONCAT(ROUND((CLICKS/VIEWS)*100,1),'%') CTR,VIEWS,CLICKS,COST
+FROM ADS
+ORDER BY CTR DESC;
+
+SELECT
+A.*,
+B.*
+FROM EMAILS A 
+JOIN EMAILS B
+ON
+A.ID = B.ID
+WHERE A.ID > B.ID AND A.EMAIL = B.EMAIL;
+
+
+SELECT
+A.*
+FROM
+EMPLOYEES A 
+JOIN EMPLOYEES B
+ON
+A.MANAGERID = B.ID
+WHERE A.SALARY>B.SALARY;
+---------------------------------------------------------------------------------------------------------------------------------------
+SELECT
+A.*
+FROM CUSTOMERS A
+LEFT JOIN ORDERSS B
+ON
+A.ID = B.CUSTOMERID
+WHERE B.ID IS NULL;
+---------------------------------------------------------------------------------------------------------------------------------------
 USE interview;
 SHOW TABLES;
-SELECT * FROM USERS;
-SELECT * FROM TRIPS;
+SELECT * FROM ORDERSS;
+SELECT * FROM CUSTOMERS;
