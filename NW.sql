@@ -319,9 +319,45 @@ EXEC msdb.dbo.sp_send_dbmail
 
 
 *****************************************************************************************************************************************************************************************
+WITH NUMBERONES AS(
+SELECT
+A.COMPANYNAME,
+A.COUNTRY,
+COUNT(B.ORDERID) QORDERS,
+DENSE_RANK() OVER(ORDER BY COUNT(B.ORDERID) DESC) RANKING,
+DENSE_RANK() OVER(PARTITION BY COUNTRY ORDER BY COUNT(B.ORDERID) DESC) RANKING_COUNTRY,
+CASE
+	WHEN COUNT(B.ORDERID)>=30 THEN 'Gold'
+	WHEN COUNT(B.ORDERID)>=20 THEN 'Silver'
+	WHEN COUNT(B.ORDERID)>=10 THEN 'Copper'
+	ELSE 'Regular'
+END TYPECLIENTS,
+FORMAT(MAX(B.ORDERDATE),'dd/MM/yyyy') LASTORDER
+FROM CUSTOMERS A 
+JOIN ORDERS B
+ON A.CUSTOMERID = B.CUSTOMERID
+GROUP BY A.COMPANYNAME, A.COUNTRY)
+SELECT * FROM NUMBERONES WHERE RANKING_COUNTRY=1
+*****************************************************************************************************************************************************************************************
+SELECT
+C.CATEGORYNAME,
+B.COMPANYNAME,
+A.PRODUCTNAME,
+A.UNITSINSTOCK,
+D.QUANTITY UNITSORDERS,
+CONCAT('$ ',ROUND((D.QUANTITY*D.UNITPRICE)-(D.DISCOUNT),0)) TOTALINCOME
+FROM PRODUCTS A
+JOIN SUPPLIERS B
+ON A.SUPPLIERID = B.SUPPLIERID
+JOIN CATEGORIES C
+ON A.CATEGORYID = C.CATEGORYID
+JOIN [ORDER DETAILS] D
+ON A.PRODUCTID = D.PRODUCTID
+ORDER BY TOTALINCOME DESC
+*****************************************************************************************************************************************************************************************
 
 USE NORTHWIND
 SELECT * FROM INFORMATION_SCHEMA.TABLES;
-SELECT * FROM [CATEGORIES];
+SELECT * FROM [ORDER DETAILS];
 SELECT * FROM FN_VIRTUALSERVERNODES()
 --PAGE 258
